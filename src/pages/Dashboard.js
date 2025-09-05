@@ -513,30 +513,31 @@ const services = [
 
 function CrescentMark() {
   return (
-    <svg viewBox="0 0 100 100" role="img" aria-label="Crescent and star">
-      <defs>
-        <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="var(--gold-500)" />
-          <stop offset="100%" stopColor="#f5d77b" />
-        </linearGradient>
-      </defs>
-      <path d="M60 11c-21 0-38 17-38 38s17 38 38 38c7 0 14-2 20-5-7 9-18 15-30 15-21 0-38-17-38-38S29 21 50 21c12 0 23 6 30 15-6-3-13-5-20-5z" fill="url(#g)" />
-      <path d="M75 35l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z" fill="var(--green-900)" />
-    </svg>
+    <img 
+      src="/logo.png" 
+      alt="Al-Mawa Logo" 
+      style={{ width: '36px', height: '36px', borderRadius: '50%' }}
+      role="img" 
+      aria-label="Al-Mawa Islamic Center Logo"
+    />
   );
 }
 
 function CrescentBg() {
   return (
-    <>
-      <defs>
-        <radialGradient id="rg" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#d4f0e1" />
-          <stop offset="100%" stopColor="transparent" />
-        </radialGradient>
-      </defs>
-      <circle cx="100" cy="100" r="100" fill="url(#rg)" />
-      <path d="M120 40c-30 0-54 24-54 54s24 54 54 54c10 0 20-3 28-7-9 12-24 20-40 20-30 0-54-24-54-54S78 53 108 53c16 0 31 8 40 20-8-4-18-7-28-7z" fill="#bfe7d2" opacity="0.35" />
-    </>
+    <img 
+      src="/logo.png" 
+      alt="" 
+      style={{ 
+        position: 'absolute', 
+        right: '-80px', 
+        top: '-60px', 
+        width: '260px', 
+        height: '260px', 
+        opacity: '0.2',
+        borderRadius: '50%'
+      }}
+      aria-hidden="true"
+    />
   );
 }
