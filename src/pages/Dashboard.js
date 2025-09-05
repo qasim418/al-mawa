@@ -514,7 +514,7 @@ const services = [
 function CrescentMark() {
   return (
     <img 
-      src="/logo.png" 
+      src="/al-mawa/star.png" 
       alt="Al-Mawa Logo" 
       style={{ width: '36px', height: '36px', borderRadius: '50%' }}
       role="img" 
@@ -526,7 +526,7 @@ function CrescentMark() {
 function CrescentBg() {
   return (
     <img 
-      src="/logo.png" 
+      src="/al-mawa/logo.png" 
       alt="" 
       style={{ 
         position: 'absolute', 
