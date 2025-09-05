@@ -214,6 +214,28 @@ export default function AlMawaLanding() {
         @media (min-width: 960px) {
           .service { grid-column: span 3; }
         }
+        @media (max-width: 640px) {
+          .container { padding: 0 16px; }
+          .hero .inner { padding: 40px 0; gap: 24px; }
+          .title { font-size: clamp(28px, 6vw, 40px); }
+          .lede { font-size: 16px; }
+          .hero-ctas { flex-direction: column; align-items: center; gap: 12px; }
+          .hero-ctas .btn { width: auto; max-width: 280px; margin: 0 auto; }
+          .np-card { padding: 14px; }
+          .np-time { font-size: 18px; }
+          .section { padding: 40px 0; }
+          .section h2 { font-size: clamp(20px, 4vw, 32px); }
+          .prayer-table th, .prayer-table td { padding: 10px 12px; font-size: 14px; }
+          .service { padding: 14px; }
+          .service h3 { font-size: 16px; }
+          .service p { font-size: 13px; }
+          .recon { gap: 16px; }
+          .contact { gap: 16px; }
+          .map { height: 200px; }
+          .foot { flex-direction: column; text-align: center; gap: 16px; }
+          .btn { padding: 10px 16px; font-size: 14px; }
+          .input { padding: 10px; font-size: 14px; }
+        }
       `}</style>
 
       <header>
@@ -425,18 +447,24 @@ export default function AlMawaLanding() {
                 <p>Announcements, prayer updates, and events straight to your inbox.</p>
                 <form onSubmit={(e) => e.preventDefault()} className="list">
                   <label>
-                    <span className="sub" style={{ display: 'block', marginBottom: 6 }}>Full Name</span>
+                    <span className="sub" style={{ display: 'block', marginBottom: 8 }}>Full Name</span>
                     <input required placeholder="Your name" className="input" />
                   </label>
                   <label>
-                    <span className="sub" style={{ display: 'block', marginBottom: 6 }}>Email</span>
+                    <span className="sub" style={{ display: 'block', marginBottom: 8 }}>Email</span>
                     <input required type="email" placeholder="you@example.com" className="input" />
                   </label>
                   <button className="btn primary" type="submit">Subscribe</button>
                 </form>
                 <style>{`
-                  .input { width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid #dfe8e3; font-size: 14px; }
+                  .input { width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid #dfe8e3; font-size: 14px; box-sizing: border-box; }
                   .input:focus { outline: none; border-color: var(--green-700); box-shadow: 0 0 0 3px rgba(22,110,71,0.15); }
+                  @media (max-width: 640px) {
+                    .input { padding: 14px 16px; font-size: 16px; border-radius: 10px; }
+                    .list label { margin-bottom: 12px; }
+                    .list .sub { font-size: 14px; margin-bottom: 6px; }
+                    .list .btn { width: 100%; margin-top: 8px; box-sizing: border-box; }
+                  }
                 `}</style>
                 <p className="note" style={{ marginTop: 10 }}>We respect your privacy. Unsubscribe anytime.</p>
               </div>
