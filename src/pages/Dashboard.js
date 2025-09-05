@@ -329,7 +329,9 @@ export default function AlMawaLanding() {
         <section id="prayers" className="section">
           <div className="container">
             <h2>Prayer Times</h2>
-            <p className="sub">Congregational (Iqamah) times for today in {center.city}. Replace these placeholders with your official schedule.</p>
+            <p className="sub">Congregational (Iqamah) times for today in {center.city}.
+               {/* Replace these placeholders with your official schedule. */}
+               </p>
             <div className="card" style={{ overflowX: 'auto' }}>
               <table className="prayer-table">
                 <thead>
@@ -350,7 +352,7 @@ export default function AlMawaLanding() {
                 </tbody>
               </table>
             </div>
-            <div className="legend">Tip: Integrate a prayer API later and update this table dynamically. For now, edit times in the component.</div>
+            {/* <div className="legend">Tip: Integrate a prayer API later and update this table dynamically. For now, edit times in the component.</div> */}
           </div>
         </section>
 
