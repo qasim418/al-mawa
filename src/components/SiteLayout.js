@@ -40,10 +40,16 @@ export default function SiteLayout({ children }) {
         .brand .name { line-height: 1.05; }
         .brand .name .sub { font-size: 12px; color: var(--muted); font-weight: 600; }
 
-        nav ul { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 0; }
+        nav ul { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 0; align-items: center; }
         nav a { text-decoration: none; font-weight: 700; color: var(--green-900); padding: 8px 10px; border-radius: 10px; }
         nav a:hover { background: var(--green-100); }
         nav a.active { background: var(--green-100); }
+
+        nav a.btn { padding: 12px 18px; border-radius: 14px; }
+        nav a.btn.primary { color: #fff; background: linear-gradient(135deg, var(--green-700), var(--green-900)); box-shadow: 0 6px 20px rgba(15,81,50,0.25); }
+        nav a.btn.primary:hover { background: linear-gradient(135deg, var(--green-700), var(--green-900)); transform: translateY(-1px); }
+        nav a.btn.primary.active { background: linear-gradient(135deg, var(--green-700), var(--green-900)); }
+        nav a.donate-link { margin-left: 6px; }
 
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: none; border-radius: 14px; padding: 12px 18px; font-weight: 800; cursor: pointer; text-decoration: none; }
         .btn.primary { background: linear-gradient(135deg, var(--green-700), var(--green-900)); color: #fff; box-shadow: 0 6px 20px rgba(15,81,50,0.25); }
@@ -91,10 +97,6 @@ export default function SiteLayout({ children }) {
                 <div className="sub">Wichita, Kansas</div>
               </div>
             </NavLink>
-
-            <NavLink className="btn primary" to="/donate">
-              Donate
-            </NavLink>
           </div>
 
           <nav aria-label="Primary">
@@ -104,6 +106,7 @@ export default function SiteLayout({ children }) {
               <li><NavLink exact to="/construction" activeClassName="active">Construction Project</NavLink></li>
               <li><NavLink exact to="/prayer-timings" activeClassName="active">Prayer Timings</NavLink></li>
               <li><NavLink exact to="/fundraising" activeClassName="active">Fundraising</NavLink></li>
+              <li><NavLink className="btn primary donate-link" to="/donate">Donate</NavLink></li>
             </ul>
           </nav>
         </div>

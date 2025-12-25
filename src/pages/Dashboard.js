@@ -21,8 +21,20 @@ export default function Home() {
     legalName: 'Masjid Annoor Wichita',
     city: 'Wichita, KS',
     address: '3104 E 17th St, Wichita, KS 67214',
-    email: 'Masjidannoorwichita@yahoo.com'
+    email: 'annoor.masjidwichita@gmail.com'
   };
+
+  const slides = useMemo(
+    () => [
+      `${process.env.PUBLIC_URL}/courasel/image1.png`,
+      `${process.env.PUBLIC_URL}/courasel/image2.png`,
+      `${process.env.PUBLIC_URL}/courasel/image3.png`,
+      `${process.env.PUBLIC_URL}/courasel/image4.png`,
+    ],
+    []
+  );
+
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const { todaySchedule, nextPrayer } = useMemo(() => makeSchedule({ now }), [now]);
 
@@ -36,12 +48,19 @@ export default function Home() {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setActiveIndex((i) => (i + 1) % slides.length);
+    }, 4200);
+    return () => window.clearInterval(id);
+  }, [slides.length]);
+
   return (
     <SiteLayout>
       <style>{`
         /* HOME ONLY */
         .hero { position: relative; overflow: hidden; background: radial-gradient(1200px 500px at 10% -10%, #eaf7f0 30%, transparent 60%), radial-gradient(1200px 500px at 110% -30%, #f3faf6 20%, transparent 70%), linear-gradient(180deg, #fff 0%, #f8fbf9 100%); }
-        .hero .inner { display: grid; grid-template-columns: 1.25fr 1fr; align-items: center; gap: 36px; padding: 64px 0; }
+        .hero .inner { display: grid; grid-template-columns: 1fr 1.18fr; align-items: stretch; gap: 36px; padding: 64px 0; }
         .eyebrow { color: var(--green-700); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; font-size: 12px; }
         .title { font-family: "DM Serif Display", serif; font-size: clamp(32px, 5vw, 52px); line-height: 1.05; margin: 10px 0 16px; color: var(--green-900); }
         .title .gold { color: var(--gold-500); }
@@ -56,6 +75,17 @@ export default function Home() {
         .np-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
         .np-time { font-size: 22px; font-weight: 800; color: var(--green-900); }
         .pill { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--green-700); padding: 6px 8px; border-radius: 999px; }
+
+        /* CAROUSEL */
+        .carousel { position: relative; height: 440px; margin-top: 10px; border-radius: 18px; overflow: hidden; border: 1px solid #e6ece8; box-shadow: 0 16px 28px rgba(0,0,0,0.06); background: #0b2a1b; }
+        .carousel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .carousel-controls { position: absolute; inset: auto 14px 14px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; pointer-events: none; }
+        .dots { display: flex; gap: 8px; pointer-events: auto; }
+        .dot { width: 10px; height: 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.55); background: rgba(255,255,255,0.28); cursor: pointer; }
+        .dot.active { background: #fff; border-color: #fff; }
+        .carBtns { display: flex; gap: 8px; pointer-events: auto; }
+        .carBtn { height: 36px; width: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.25); color: #fff; font-weight: 900; cursor: pointer; }
+        .carBtn:hover { background: rgba(0,0,0,0.35); }
 
         .prayer-table { width: 100%; border-collapse: collapse; }
         .prayer-table th, .prayer-table td { padding: 12px 14px; text-align: left; border-bottom: 1px dashed #e9efe9; }
@@ -94,6 +124,7 @@ export default function Home() {
           .hero .inner { grid-template-columns: 1fr; }
           .recon { grid-template-columns: 1fr; }
           .visit-grid { grid-template-columns: 1fr; }
+          .carousel { height: 360px; }
         }
         @media (min-width: 640px) {
           .service { grid-column: span 6; }
@@ -116,6 +147,7 @@ export default function Home() {
           .recon { gap: 16px; }
           .map { height: 240px; }
           .btn { padding: 10px 16px; font-size: 14px; }
+          .carousel { height: 300px; }
         }
       `}</style>
 
@@ -137,6 +169,7 @@ export default function Home() {
                 <span>Donate</span>
               </NavLink>
               <NavLink className="btn ghost" to="/prayer-timings">Prayer Timings</NavLink>
+              <button type="button" className="btn ghost" onClick={scrollToVisit}>Visit & Contact</button>
             </div>
             <div className="rule" />
             <div className="np-card" role="complementary" aria-live="polite">
@@ -156,26 +189,39 @@ export default function Home() {
           </div>
 
           <div className="anim delay-2">
-            <div className="card" style={{ padding: 18 }}>
-              <h3 style={{ margin: "2px 0 10px", color: "var(--green-900)" }}>Jumu'ah</h3>
-              <p className="sub" style={{ marginTop: -6 }}>Khutbah & Salah every Friday</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div className="np-card" style={{ padding: 14 }}>
-                  <div className="sub" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: ".08em" }}>First Khutbah</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <strong>1:30 PM</strong>
-                    <span className="pill">Jum'ah 1</span>
-                  </div>
+            <div className="carousel" aria-label="Masjid photo carousel">
+              <img src={slides[activeIndex]} alt="Masjid Annoor" />
+              <div className="carousel-controls">
+                <div className="dots" aria-label="Carousel slide selector">
+                  {slides.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`dot ${idx === activeIndex ? 'active' : ''}`}
+                      onClick={() => setActiveIndex(idx)}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
                 </div>
-                <div className="np-card" style={{ padding: 14 }}>
-                  <div className="sub" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: ".08em" }}>Second Khutbah</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <strong>2:30 PM</strong>
-                    <span className="pill">Jum'ah 2</span>
-                  </div>
+                <div className="carBtns" aria-label="Carousel navigation">
+                  <button
+                    type="button"
+                    className="carBtn"
+                    onClick={() => setActiveIndex((i) => (i - 1 + slides.length) % slides.length)}
+                    aria-label="Previous slide"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    className="carBtn"
+                    onClick={() => setActiveIndex((i) => (i + 1) % slides.length)}
+                    aria-label="Next slide"
+                  >
+                    ›
+                  </button>
                 </div>
               </div>
-              <p className="note" style={{ marginTop: 10 }}>Times may shift seasonally. Please verify weekly announcements.</p>
             </div>
           </div>
         </div>
@@ -204,6 +250,23 @@ export default function Home() {
                       <td className="mono">{p.iqamah ? fmtTime(p.iqamah) : "—"}</td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="card" style={{ marginTop: 14, overflowX: 'auto' }} aria-label="Jumu’ah time">
+              <table className="prayer-table">
+                <thead>
+                  <tr>
+                    <th>Jumu’ah</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Khutbah & Salah</strong></td>
+                    <td className="mono">1:00 PM</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -284,7 +347,7 @@ export default function Home() {
         <div className="container">
           <div className="card" style={{ padding: 22 }}>
             <h2 style={{ marginTop: 0 }}>Visit & Contact</h2>
-            <p className="sub">Map, address, email, and administration contact.</p>
+            <p className="sub">Map, address, email, and a quick contact.</p>
 
             <div className="visit-grid">
               <iframe
@@ -292,7 +355,7 @@ export default function Home() {
                 className="map"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(center.address)}&output=embed`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(`${center.legalName}, ${center.address}`)}&output=embed`}
               />
 
               <div className="prose">
@@ -303,26 +366,18 @@ export default function Home() {
                 </p>
 
                 <div className="rule" />
-
-                <h3 style={{ margin: '0 0 10px', color: 'var(--green-900)' }}>Administration</h3>
                 <div className="admin-row">
                   <div>
                     <div style={{ fontWeight: 900, color: 'var(--green-900)' }}>Khalid Ahmed</div>
-                    <div className="sub" style={{ margin: 0 }}>Administration</div>
                   </div>
                   <div className="mono" style={{ fontWeight: 900 }}>
-                    <a href="tel:316-300-9834" style={{ color: 'var(--green-700)', textDecoration: 'none' }}>316-300-9834</a>
+                    <a href="tel:+13162130467" style={{ color: 'var(--green-700)', textDecoration: 'none' }}>+1 (316) 213-0467</a>
                   </div>
                 </div>
 
                 <p className="sub" style={{ marginTop: 12 }}>
-                  For construction questions, donations by check, or volunteering, email us and we’ll respond as soon as possible.
+                  Contact us for construction questions, donations by check, or volunteering.
                 </p>
-
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <NavLink className="btn primary" to="/donate">Donate</NavLink>
-                  <NavLink className="btn ghost" to="/construction">Construction Details</NavLink>
-                </div>
               </div>
             </div>
           </div>
@@ -334,7 +389,7 @@ export default function Home() {
 
 const services = [
   { tag: "Daily Salah", title: "Five Daily Prayers", desc: "Congregational salah with calm atmosphere and Quran recitation." },
-  { tag: "Friday", title: "Jumu'ah Khutbah", desc: "Weekly sermon and congregational prayer with two khutbah times." },
+  { tag: "Friday", title: "Jumu'ah Khutbah", desc: "Weekly sermon and congregational prayer." },
   { tag: "Education", title: "Quran & Weekend School", desc: "Tajwid, memorization, and Islamic studies for children and adults." },
   { tag: "Youth", title: "Youth Circles", desc: "Mentorship, sports, and halaqah to nurture strong identity and character." },
   { tag: "Family", title: "Nikah & Counseling", desc: "Marriage services and confidential pastoral counseling by appointment." },

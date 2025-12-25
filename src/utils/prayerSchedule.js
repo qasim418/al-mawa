@@ -1,6 +1,6 @@
-export function makeSchedule({ now = new Date() } = {}) {
+function getDefaultSchedule() {
   // Placeholder schedule. Replace with real timetable or API later.
-  const baseSchedule = [
+  return [
     { key: 'Fajr', adhan: '05:30', iqamah: '05:45' },
     { key: 'Sunrise', adhan: '06:52' },
     { key: 'Dhuhr', adhan: '13:30', iqamah: '13:45' },
@@ -8,15 +8,12 @@ export function makeSchedule({ now = new Date() } = {}) {
     { key: 'Maghrib', adhan: '19:45', iqamah: '19:50' },
     { key: 'Isha', adhan: '21:00', iqamah: '21:10' }
   ];
+}
 
-  const fridayExtras = [
-    { key: "Jum'ah 1", adhan: '13:30', iqamah: '13:45' },
-    { key: "Jum'ah 2", adhan: '14:30', iqamah: '14:45' }
-  ];
+export function makeSchedule({ now = new Date(), schedule } = {}) {
+  const baseSchedule = Array.isArray(schedule) && schedule.length ? schedule : getDefaultSchedule();
 
-  const isFriday = now.getDay() === 5;
   const todaySchedule = [...baseSchedule];
-  if (isFriday) todaySchedule.splice(3, 0, ...fridayExtras);
 
   function parseToday(hhmm, dayOffset = 0) {
     const [h, m] = hhmm.split(':').map(Number);

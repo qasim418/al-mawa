@@ -2,6 +2,8 @@ import React from 'react';
 import SiteLayout from '../components/SiteLayout';
 
 export default function About() {
+  const publicUrl = process.env.PUBLIC_URL || '';
+
   return (
     <SiteLayout>
       <section className="section">
@@ -57,6 +59,28 @@ export default function About() {
                 of Oliver Street and Floberta Street near the WSU campus. For the first time in the history of Wichita and the state of Kansas, Jumu‘ah and the
                 five daily prayers were established continuously.
               </p>
+
+              <figure style={{ margin: '10px 0 14px', maxWidth: 420 }}>
+                <div
+                  style={{
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    border: '1px solid rgba(18, 71, 48, 0.12)',
+                    background: '#ffffff',
+                    padding: 10,
+                    boxShadow: '0 10px 26px rgba(0,0,0,0.06)'
+                  }}
+                >
+                  <img
+                    src={`${publicUrl}/history/little-house-on-the-corner.png`}
+                    alt="Little house on the corner (1979)"
+                    style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
+                  />
+                </div>
+                <figcaption className="sub" style={{ marginTop: 8 }}>
+                  Little house on the corner (1979)
+                </figcaption>
+              </figure>
               <p>
                 These brothers paid the rent and utility expenses from their own student allowances, never accepting donations from others. Both were active in
                 Tablighi work, dedicating their time to guiding fellow students and local Muslims toward worship and community service.
