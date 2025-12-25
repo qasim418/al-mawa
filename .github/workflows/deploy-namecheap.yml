@@ -1,0 +1,49 @@
+name: Deploy to Namecheap
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-namecheap
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Deploys the contents of ./build to your Namecheap hosting via FTP.
+      # Works well for cPanel shared hosting.
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.NC_FTP_SERVER }}
+          username: ${{ secrets.NC_FTP_USERNAME }}
+          password: ${{ secrets.NC_FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: build/
+          server-dir: ${{ secrets.NC_FTP_SERVER_DIR }}
+          # Set to true if you want the remote folder to exactly mirror build/
+          # (it will delete remote files that are not in build/)
+          dangerous-clean-slate: true
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
