@@ -21,7 +21,7 @@ export default function Home() {
     legalName: 'Masjid Annoor Wichita',
     city: 'Wichita, KS',
     address: '3104 E 17th St, Wichita, KS 67214',
-    email: 'annoor.masjidwichita@gmail.com'
+    email: 'info@almawa.org'
   };
 
   const slides = useMemo(
@@ -68,7 +68,7 @@ export default function Home() {
       <style>{`
         /* HOME ONLY */
         .hero { position: relative; overflow: hidden; background: radial-gradient(1200px 500px at 10% -10%, #eaf7f0 30%, transparent 60%), radial-gradient(1200px 500px at 110% -30%, #f3faf6 20%, transparent 70%), linear-gradient(180deg, #fff 0%, #f8fbf9 100%); }
-        .hero .inner { display: grid; grid-template-columns: 1fr 1.18fr; align-items: stretch; gap: 36px; padding: 64px 0; }
+        .hero .inner { display: grid; grid-template-columns: 1fr 1.18fr; align-items: stretch; gap: 36px; padding-top: 64px; padding-bottom: 64px; }
         .eyebrow { color: var(--green-700); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; font-size: 12px; }
         .title { font-family: "DM Serif Display", serif; font-size: clamp(32px, 5vw, 52px); line-height: 1.05; margin: 10px 0 16px; color: var(--green-900); }
         .title .gold { color: var(--gold-500); }
@@ -141,7 +141,7 @@ export default function Home() {
           .service { grid-column: span 3; }
         }
         @media (max-width: 640px) {
-          .hero .inner { padding: 40px 0; gap: 24px; }
+          .hero .inner { padding-top: 40px; padding-bottom: 40px; gap: 24px; }
           .title { font-size: clamp(28px, 6vw, 40px); }
           .lede { font-size: 16px; }
           .hero-ctas { flex-direction: column; align-items: center; gap: 12px; }
@@ -260,22 +260,7 @@ export default function Home() {
               </table>
             </div>
 
-            <div className="card" style={{ marginTop: 14, overflowX: 'auto' }} aria-label="Jumu’ah time">
-              <table className="prayer-table">
-                <thead>
-                  <tr>
-                    <th>Jumu’ah</th>
-                    <th>Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>Khutbah & Salah</strong></td>
-                    <td className="mono">1:00 PM</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 14 }}>
               <NavLink className="btn primary" to="/prayer-timings">View Full Timings</NavLink>
               <button type="button" className="btn ghost" onClick={scrollToVisit}>Visit & Contact</button>
