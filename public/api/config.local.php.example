@@ -1,0 +1,15 @@
+<?php
+// Copy to config.local.php and fill in your local DB creds.
+// IMPORTANT: Keep config.local.php out of git.
+
+return [
+    'db' => [
+        'host' => '127.0.0.1',
+        'name' => 'al_mawa',
+        'user' => 'root',
+        'pass' => '',
+        'charset' => 'utf8mb4',
+    ],
+    // Optional: used by admin/create-admin.php (localhost-only anyway)
+    'setup_key' => '',
+];

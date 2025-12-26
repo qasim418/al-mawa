@@ -47,3 +47,4 @@ jobs:
             **/.git*
             **/.github/**
             **/node_modules/**
+            api/config.local.php

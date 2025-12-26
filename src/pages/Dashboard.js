@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout';
-import { fmtTime, makeSchedule, timeLeft } from '../utils/prayerSchedule';
+import { fmtTime, makeSchedule, timeLeft, fetchPrayerSchedule } from '../utils/prayerSchedule';
 
 // One-file, responsive landing page for
 // Al‑Mawa (Al Masjid Annoor Wichita)
@@ -36,7 +36,15 @@ export default function Home() {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const { todaySchedule, nextPrayer } = useMemo(() => makeSchedule({ now }), [now]);
+  /* DASHBOARD PRAYER LOADER */
+  const [schedule, setSchedule] = useState([]);
+
+  useEffect(() => {
+    // Only fetch if we haven't already
+    fetchPrayerSchedule().then((s) => setSchedule(s));
+  }, []);
+
+  const { todaySchedule, nextPrayer } = useMemo(() => makeSchedule({ now, schedule }), [now, schedule]);
 
   const scrollToVisit = () => {
     const el = document.getElementById('visit');
@@ -166,10 +174,8 @@ export default function Home() {
             </p>
             <div className="hero-ctas">
               <NavLink className="btn primary" to="/donate" aria-label="Donate for construction">
-                <span>Donate</span>
+                <span>Donate to Construction</span>
               </NavLink>
-              <NavLink className="btn ghost" to="/prayer-timings">Prayer Timings</NavLink>
-              <button type="button" className="btn ghost" onClick={scrollToVisit}>Visit & Contact</button>
             </div>
             <div className="rule" />
             <div className="np-card" role="complementary" aria-live="polite">
@@ -401,15 +407,15 @@ const services = [
 function CrescentBg() {
   const publicUrl = process.env.PUBLIC_URL || '';
   return (
-    <img 
-      src={`${publicUrl}/logo.png`} 
-      alt="" 
-      style={{ 
-        position: 'absolute', 
-        right: '-80px', 
-        top: '-60px', 
-        width: '260px', 
-        height: '260px', 
+    <img
+      src={`${publicUrl}/logo.png`}
+      alt=""
+      style={{
+        position: 'absolute',
+        right: '-80px',
+        top: '-60px',
+        width: '260px',
+        height: '260px',
         opacity: '0.2',
         borderRadius: '50%'
       }}

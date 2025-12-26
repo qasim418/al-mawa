@@ -1,18 +1,36 @@
-function getDefaultSchedule() {
-  // Placeholder schedule. Replace with real timetable or API later.
+
+// Fetch schedule from API (returns Promise)
+export async function fetchPrayerSchedule() {
+  try {
+    // DEVELOPMENT (Your PC): Connects to XAMPP server
+    if (process.env.NODE_ENV === 'development') {
+      const res = await fetch('http://localhost/al-mawa/public/api/prayer_times.php');
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.schedule)) return data.schedule;
+    }
+    // PRODUCTION (Namecheap/Live): Uses relative path
+    // React's build folder moves 'public/api' -> 'api', so we just ask for 'api/...'
+    else {
+      const res = await fetch('api/prayer_times.php');
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.schedule)) return data.schedule;
+    }
+  } catch (e) { }
+  // fallback static
   return [
     { key: 'Fajr', adhan: '05:30', iqamah: '05:45' },
     { key: 'Sunrise', adhan: '06:52' },
     { key: 'Dhuhr', adhan: '13:30', iqamah: '13:45' },
     { key: 'Asr', adhan: '17:10', iqamah: '17:25' },
     { key: 'Maghrib', adhan: '19:45', iqamah: '19:50' },
-    { key: 'Isha', adhan: '21:00', iqamah: '21:10' }
+    { key: 'Isha', adhan: '21:00', iqamah: '21:10' },
+    { key: 'Jumuah', adhan: '13:00', iqamah: '13:30' }
   ];
 }
 
-export function makeSchedule({ now = new Date(), schedule } = {}) {
-  const baseSchedule = Array.isArray(schedule) && schedule.length ? schedule : getDefaultSchedule();
 
+export function makeSchedule({ now = new Date(), schedule } = {}) {
+  const baseSchedule = Array.isArray(schedule) && schedule.length ? schedule : [];
   const todaySchedule = [...baseSchedule];
 
   function parseToday(hhmm, dayOffset = 0) {
@@ -23,6 +41,7 @@ export function makeSchedule({ now = new Date(), schedule } = {}) {
     return d;
   }
 
+  // Only use these for "next prayer" logic
   const keys = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
   const list = todaySchedule.filter((p) => keys.includes(p.key));
 

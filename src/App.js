@@ -5,6 +5,7 @@ import ConstructionProject from './pages/ConstructionProject';
 import Donate from './pages/Donate';
 import Fundraising from './pages/Fundraising';
 import Home from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import PrayerTimings from './pages/PrayerTimings';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
     <Router>
       <Switch>
         <Route exact path="/" component={Home} />
+        <Route exact path="/admin" component={AdminDashboard} />
         <Route exact path="/about" component={About} />
         <Route exact path="/construction" component={ConstructionProject} />
         <Route exact path="/donate" component={Donate} />

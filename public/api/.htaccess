@@ -1,0 +1,4 @@
+# Protect configuration from direct web access
+<FilesMatch "^(config(\.local)?|db|helpers|auth)\.php$">
+  Require all denied
+</FilesMatch>
