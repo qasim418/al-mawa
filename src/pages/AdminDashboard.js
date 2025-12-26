@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout';
 
 export default function AdminDashboard() {
-    const history = useHistory();
     const [session, setSession] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
