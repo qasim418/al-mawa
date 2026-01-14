@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout';
 import { fmtTime, makeSchedule, timeLeft, fetchPrayerSchedule } from '../utils/prayerSchedule';
+import { homeText } from '../content/homeText';
+import { siteConfig } from '../config/siteConfig';
+import { fetchFundraisingRaised } from '../utils/fundraising';
 
 // One-file, responsive landing page for
 // Al‑Mawa (Al Masjid Annoor Wichita)
@@ -39,9 +42,18 @@ export default function Home() {
   /* DASHBOARD PRAYER LOADER */
   const [schedule, setSchedule] = useState([]);
 
+  /* FUNDRAISING */
+  const phase1Goal = siteConfig?.fundraising?.phase1Goal ?? 1305000;
+  const [raised, setRaised] = useState(0);
+  const percent = phase1Goal > 0 ? Math.min(100, Math.round((raised / phase1Goal) * 100)) : 0;
+
   useEffect(() => {
     // Only fetch if we haven't already
     fetchPrayerSchedule().then((s) => setSchedule(s));
+  }, []);
+
+  useEffect(() => {
+    fetchFundraisingRaised().then(setRaised);
   }, []);
 
   const { todaySchedule, nextPrayer } = useMemo(() => makeSchedule({ now, schedule }), [now, schedule]);
@@ -165,12 +177,10 @@ export default function Home() {
         </svg>
         <div className="container inner">
           <div className="anim">
-            <div className="eyebrow">Bismillah</div>
-            <h1 className="title">
-              Welcome to <span className="gold">Masjid Annoor</span> Wichita
-            </h1>
+            <div className="eyebrow">{homeText.heroEyebrow}</div>
+            <h1 className="title">{homeText.heroTitle}</h1>
             <p className="lede">
-              “A sanctuary of serenity and reflection, Masjid Annoor is more than just a place of worship—it is a home filled with faith, warmth, and tradition. Rooted in the timeless teachings of Islam, we are a community devoted to worship, learning, and service. Whether you are a student, a visitor, or a long-time resident, we welcome you to join us—explore, connect, and share in the spirit of faith and friendship. Come experience the peace, unity, and sense of belonging that define our religion.”
+              {homeText.heroSubtitle}
             </p>
             <div className="hero-ctas">
               <NavLink className="btn primary" to="/donate" aria-label="Donate for construction">
@@ -303,14 +313,18 @@ export default function Home() {
               <div className="card" style={{ padding: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
                   <div className="eyebrow">Phase 1 Goal</div>
-                  <div className="mono" style={{ fontWeight: 800, color: 'var(--green-900)' }}>$1,305,000.00</div>
+                  <div className="mono" style={{ fontWeight: 800, color: 'var(--green-900)' }}>
+                    {phase1Goal.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })}
+                  </div>
                 </div>
                 <div className="progress" aria-label="Fundraising progress">
-                  <div className="bar" style={{ width: '0%' }} />
+                  <div className="bar" style={{ width: `${percent}%` }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
                   <div className="note">Raised so far</div>
-                  <div className="mono" style={{ fontWeight: 700 }}>$0 (update soon)</div>
+                  <div className="mono" style={{ fontWeight: 700 }}>
+                    {raised.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })} ({percent}%)
+                  </div>
                 </div>
                 <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
                   <NavLink className="btn primary" to="/donate">Donate Now</NavLink>
@@ -381,12 +395,7 @@ export default function Home() {
 const services = [
   { tag: "Daily Salah", title: "Five Daily Prayers", desc: "Congregational salah with calm atmosphere and Quran recitation." },
   { tag: "Friday", title: "Jumu'ah Khutbah", desc: "Weekly sermon and congregational prayer." },
-  { tag: "Education", title: "Quran & Weekend School", desc: "Tajwid, memorization, and Islamic studies for children and adults." },
-  { tag: "Youth", title: "Youth Circles", desc: "Mentorship, sports, and halaqah to nurture strong identity and character." },
-  { tag: "Family", title: "Nikah & Counseling", desc: "Marriage services and confidential pastoral counseling by appointment." },
-  { tag: "Support", title: "Zakat & Aid", desc: "Zakat distribution and assistance for those in need (screened)." },
-  { tag: "Community", title: "Open House & Dawah", desc: "Visits for schools and neighbors; interfaith and civic partnerships." },
-  { tag: "Janazah", title: "Funeral Support", desc: "Guidance with ghusl, janazah prayer, and burial coordination." }
+  { tag: "Ramadan", title: "Taraweeh Prayer", desc: "Nightly Taraweeh prayers during the month of Ramadan (times announced)." }
 ];
 
 function CrescentBg() {

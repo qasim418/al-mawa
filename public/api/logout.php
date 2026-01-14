@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/helpers.php';
 
-handle_cors();
+handle_preflight();
+cors_headers();
 
 require_method('POST');
 start_session();

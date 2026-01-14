@@ -2,28 +2,38 @@
 
 declare(strict_types=1);
 
+function cors_headers(): void {
+    $origin = (string)($_SERVER['HTTP_ORIGIN'] ?? '');
+    if ($origin === '') return;
+
+    // Dev: allow the React dev server to call PHP API with credentials.
+    // We intentionally restrict this to localhost/127.0.0.1.
+    if (!preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#', $origin)) {
+        return;
+    }
+
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Headers: Content-Type');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+}
+
+function handle_preflight(): void {
+    cors_headers();
+    $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+    if ($method === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
+}
+
 function json_response($data, int $status = 200): void {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
     echo json_encode($data, JSON_UNESCAPED_SLASHES);
     exit;
-}
-
-function handle_cors(): void {
-    // Allow development frontend
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    if (strpos($origin, 'localhost:3000') !== false) {
-        header("Access-Control-Allow-Origin: $origin");
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-    }
-    
-    // Handle preflight
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
-        exit(0);
-    }
 }
 
 function read_json_body(): array {

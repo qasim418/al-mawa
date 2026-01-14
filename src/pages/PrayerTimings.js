@@ -22,8 +22,8 @@ export default function PrayerTimings() {
   const { todaySchedule, nextPrayer } = useMemo(() => makeSchedule({ now, schedule }), [now, schedule]);
 
   // Separate Jumuah if present
-  const jumuah = todaySchedule.find((p) => p.key && p.key.toLowerCase().startsWith('jumu'));
-  const mainPrayers = todaySchedule.filter((p) => !p.key.toLowerCase().startsWith('jumu'));
+  const jumuah = todaySchedule.find((p) => p?.key && p.key.toLowerCase().startsWith('jumu'));
+  const mainPrayers = todaySchedule.filter((p) => !(p?.key && p.key.toLowerCase().startsWith('jumu')));
 
   if (loading) return <SiteLayout><section className="section"><div className="container">Loading prayer times...</div></section></SiteLayout>;
 

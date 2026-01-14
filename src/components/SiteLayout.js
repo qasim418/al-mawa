@@ -133,7 +133,6 @@ export default function SiteLayout({ children }) {
               <li><NavLink exact to="/about" activeClassName="active" onClick={() => setMenuOpen(false)}>About</NavLink></li>
               <li><NavLink exact to="/construction" activeClassName="active" onClick={() => setMenuOpen(false)}>Construction Project</NavLink></li>
               <li><NavLink exact to="/prayer-timings" activeClassName="active" onClick={() => setMenuOpen(false)}>Prayer Timings</NavLink></li>
-              <li><NavLink exact to="/fundraising" activeClassName="active" onClick={() => setMenuOpen(false)}>Fundraising</NavLink></li>
               <li><NavLink className="btn primary donate-link" to="/donate" onClick={() => setMenuOpen(false)}>Donate</NavLink></li>
             </ul>
           </nav>

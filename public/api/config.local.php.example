@@ -10,6 +10,13 @@ return [
         'pass' => '',
         'charset' => 'utf8mb4',
     ],
+    // Optional: used to calculate Maghrib (sunset) automatically
+    // Defaults to Wichita, KS if omitted.
+    'timezone' => 'America/Chicago',
+    'location' => [
+        'lat' => 37.7197,
+        'lng' => -97.2896,
+    ],
     // Optional: used by admin/create-admin.php (localhost-only anyway)
     'setup_key' => '',
 ];

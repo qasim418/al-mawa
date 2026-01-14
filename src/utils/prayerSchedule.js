@@ -2,20 +2,12 @@
 // Fetch schedule from API (returns Promise)
 export async function fetchPrayerSchedule() {
   try {
-    // DEVELOPMENT (Your PC): Connects to XAMPP server
-    if (process.env.NODE_ENV === 'development') {
-      const res = await fetch('http://localhost/al-mawa/public/api/prayer_times.php');
-      const data = await res.json();
-      if (data.ok && Array.isArray(data.schedule)) return data.schedule;
+    const res = await fetch('/al-mawa/public/api/prayer_times.php');
+    const data = await res.json();
+    if (data.ok && Array.isArray(data.schedule)) {
+      return data.schedule;
     }
-    // PRODUCTION (Namecheap/Live): Uses relative path
-    // React's build folder moves 'public/api' -> 'api', so we just ask for 'api/...'
-    else {
-      const res = await fetch('api/prayer_times.php');
-      const data = await res.json();
-      if (data.ok && Array.isArray(data.schedule)) return data.schedule;
-    }
-  } catch (e) { }
+  } catch (e) {}
   // fallback static
   return [
     { key: 'Fajr', adhan: '05:30', iqamah: '05:45' },

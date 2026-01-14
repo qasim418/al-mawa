@@ -13,8 +13,12 @@ export default function AdminDashboard() {
     const [csrf, setCsrf] = useState('');
     const [msg, setMsg] = useState('');
 
-    const isDev = process.env.NODE_ENV === 'development';
-    const apiBase = isDev ? 'http://localhost/al-mawa/public/api' : 'api';
+    const [raised, setRaised] = useState('0');
+    const [fundsMsg, setFundsMsg] = useState('');
+    const [fundsErr, setFundsErr] = useState('');
+    const [savingFunds, setSavingFunds] = useState(false);
+
+    const apiBase = '/al-mawa/public/api';
 
     async function checkSession() {
         try {
@@ -33,6 +37,17 @@ export default function AdminDashboard() {
                 setSession({ user: 'Admin' });
                 setSchedule(data.schedule);
                 setCsrf(data.csrf);
+
+                // Load fundraising raised amount
+                const fr = await fetch(`${apiBase}/admin_fundraising.php`, {
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                });
+                const frData = await fr.json();
+                if (frData.ok) {
+                    setRaised(String(frData.raised ?? 0));
+                    if (frData.csrf) setCsrf(frData.csrf);
+                }
             }
         } catch (e) {
             console.error(e);
@@ -109,6 +124,31 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleSaveFunds = async () => {
+        setSavingFunds(true);
+        setFundsMsg('');
+        setFundsErr('');
+        try {
+            const res = await fetch(`${apiBase}/admin_fundraising.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ raised, csrf }),
+            });
+            const data = await res.json();
+            if (data.ok) {
+                setFundsMsg('Fundraising updated!');
+                checkSession();
+            } else {
+                setFundsErr(data.error || 'Failed to update fundraising');
+            }
+        } catch (e) {
+            setFundsErr('Network error updating fundraising');
+        } finally {
+            setSavingFunds(false);
+        }
+    };
+
     if (!session) {
         return (
             <SiteLayout>
@@ -161,6 +201,10 @@ export default function AdminDashboard() {
                         {msg && <div style={{ background: '#d4edda', color: '#155724', padding: 10, borderRadius: 4, marginBottom: 15 }}>{msg}</div>}
                         {error && <div style={{ background: '#f8d7da', color: '#721c24', padding: 10, borderRadius: 4, marginBottom: 15 }}>{error}</div>}
 
+                        <div className="sub" style={{ margin: '0 0 12px' }}>
+                            Note: Maghrib is automatic (sunset) and Iqamah is set to +4 minutes.
+                        </div>
+
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                                 <tr>
@@ -171,9 +215,12 @@ export default function AdminDashboard() {
                             </thead>
                             <tbody>
                                 {schedule.map((row, i) => (
+                                    (() => {
+                                        const isMaghribAuto = (row.key === 'Maghrib') || row.auto === true;
+                                        return (
                                     <tr key={row.key || i} style={{ borderBottom: '1px solid #eee' }}>
                                         <td style={{ padding: '10px' }}>
-                                            <strong>{row.key}</strong>
+                                            <strong>{row.key}{isMaghribAuto ? ' (Auto)' : ''}</strong>
                                         </td>
                                         <td style={{ padding: '10px' }}>
                                             <input
@@ -181,6 +228,7 @@ export default function AdminDashboard() {
                                                 value={row.adhan_time || ''}
                                                 onChange={(e) => handleChange(e, i, 'adhan_time')}
                                                 style={{ padding: '6px', width: '80px', fontFamily: 'monospace' }}
+                                                disabled={isMaghribAuto}
                                             />
                                         </td>
                                         <td style={{ padding: '10px' }}>
@@ -190,9 +238,12 @@ export default function AdminDashboard() {
                                                 onChange={(e) => handleChange(e, i, 'iqamah_time')}
                                                 placeholder="null"
                                                 style={{ padding: '6px', width: '80px', fontFamily: 'monospace' }}
+                                                disabled={isMaghribAuto}
                                             />
                                         </td>
                                     </tr>
+                                        );
+                                    })()
                                 ))}
                             </tbody>
                         </table>
@@ -200,6 +251,31 @@ export default function AdminDashboard() {
                         <div style={{ marginTop: 20, textAlign: 'right' }}>
                             <button className="btn primary" onClick={handleSave} disabled={loading}>
                                 {loading ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="card" style={{ padding: 20, marginTop: 18 }}>
+                        <h2 style={{ marginTop: 0 }}>Fundraising</h2>
+                        <p className="sub" style={{ marginTop: 0 }}>Update the “Raised so far” amount shown on the site.</p>
+
+                        {fundsMsg && <div style={{ background: '#d4edda', color: '#155724', padding: 10, borderRadius: 4, marginBottom: 15 }}>{fundsMsg}</div>}
+                        {fundsErr && <div style={{ background: '#f8d7da', color: '#721c24', padding: 10, borderRadius: 4, marginBottom: 15 }}>{fundsErr}</div>}
+
+                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'end' }}>
+                            <div style={{ minWidth: 220 }}>
+                                <label style={{ display: 'block', marginBottom: 6, fontWeight: 700 }}>Raised so far (USD)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={raised}
+                                    onChange={(e) => setRaised(e.target.value)}
+                                    style={{ width: '100%', padding: '10px', borderRadius: 4, border: '1px solid #ddd', fontFamily: 'monospace' }}
+                                />
+                            </div>
+                            <button className="btn primary" onClick={handleSaveFunds} disabled={savingFunds}>
+                                {savingFunds ? 'Saving...' : 'Save Fundraising'}
                             </button>
                         </div>
                     </div>

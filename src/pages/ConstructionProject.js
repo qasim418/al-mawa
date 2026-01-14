@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout';
+import { siteConfig } from '../config/siteConfig';
+import { fetchFundraisingRaised } from '../utils/fundraising';
 
 const phases = [
   {
@@ -60,6 +62,15 @@ function money(amount) {
 }
 
 export default function ConstructionProject() {
+  const phase1Goal = siteConfig?.fundraising?.phase1Goal ?? 1305000;
+  const [raised, setRaised] = useState(0);
+
+  useEffect(() => {
+    fetchFundraisingRaised().then(setRaised);
+  }, []);
+
+  const percent = phase1Goal > 0 ? Math.min(100, Math.round((raised / phase1Goal) * 100)) : 0;
+
   return (
     <SiteLayout>
       <section className="section">
@@ -97,7 +108,41 @@ export default function ConstructionProject() {
 
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 10 }}>
                 <NavLink className="btn primary" to="/donate">Donate Now</NavLink>
-                <NavLink className="btn ghost" to="/fundraising">See Fundraising</NavLink>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ height: 18 }} />
+
+          <div className="card" style={{ padding: 22 }}>
+            <div className="prose">
+              <h2 style={{ marginTop: 0 }}>Fundraising Progress</h2>
+              <p className="sub" style={{ marginTop: 6 }}>
+                Phase 1 goal and raised-to-date.
+              </p>
+
+              <div style={{ display: 'grid', gap: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                  <div className="sub" style={{ margin: 0 }}>Goal (Phase 1)</div>
+                  <div className="mono" style={{ fontWeight: 900, color: 'var(--green-900)' }}>
+                    {phase1Goal.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })}
+                  </div>
+                </div>
+
+                <div style={{ height: 12, background: '#edf4ef', borderRadius: 999, overflow: 'hidden', border: '1px solid #e0ebe4' }} aria-label="Fundraising progress">
+                  <div style={{ height: '100%', width: `${percent}%`, background: 'linear-gradient(90deg, var(--gold-500), #f5d77b)' }} />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                  <div className="sub" style={{ margin: 0 }}>Raised so far</div>
+                  <div className="mono" style={{ fontWeight: 900 }}>
+                    {raised.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })} ({percent}%)
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 10 }}>
+                  <NavLink className="btn primary" to="/donate">Donate</NavLink>
+                </div>
               </div>
             </div>
           </div>

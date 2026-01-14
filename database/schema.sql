@@ -22,6 +22,18 @@ CREATE TABLE IF NOT EXISTS prayer_times (
   UNIQUE KEY uniq_prayer_key (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Simple fundraising progress storage (single row id=1)
+CREATE TABLE IF NOT EXISTS fundraising_progress (
+  id TINYINT UNSIGNED NOT NULL,
+  raised_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO fundraising_progress (id, raised_amount) VALUES (1, 0)
+ON DUPLICATE KEY UPDATE
+  raised_amount = raised_amount;
+
 -- Initial default rows (same as current placeholder schedule)
 INSERT INTO prayer_times (`key`, adhan_time, iqamah_time, sort_order) VALUES
 ('Fajr', '05:30', '05:45', 10),

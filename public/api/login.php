@@ -5,9 +5,9 @@ declare(strict_types=1);
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/db.php';
 
-handle_cors();
-
 try {
+    handle_preflight();
+    cors_headers();
     require_method('POST');
     start_session();
 
