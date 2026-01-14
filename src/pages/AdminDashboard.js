@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout';
+import { getApiBase } from '../utils/apiBase';
 
 export default function AdminDashboard() {
     const [session, setSession] = useState(null);
@@ -18,7 +19,7 @@ export default function AdminDashboard() {
     const [fundsErr, setFundsErr] = useState('');
     const [savingFunds, setSavingFunds] = useState(false);
 
-    const apiBase = '/al-mawa/public/api';
+    const apiBase = getApiBase();
 
     async function checkSession() {
         try {

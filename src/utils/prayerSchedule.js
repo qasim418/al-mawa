@@ -1,8 +1,10 @@
 
+import { getApiBase } from './apiBase';
+
 // Fetch schedule from API (returns Promise)
 export async function fetchPrayerSchedule() {
   try {
-    const res = await fetch('/al-mawa/public/api/prayer_times.php');
+    const res = await fetch(`${getApiBase()}/prayer_times.php`);
     const data = await res.json();
     if (data.ok && Array.isArray(data.schedule)) {
       return data.schedule;
