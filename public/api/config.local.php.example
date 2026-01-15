@@ -10,7 +10,7 @@ return [
         'pass' => '',
         'charset' => 'utf8mb4',
     ],
-    // Optional: used to calculate Maghrib (sunset) automatically
+    // Optional: used to calculate Sunrise/Maghrib automatically (Open-Meteo, free) with fallback
     // Defaults to Wichita, KS if omitted.
     'timezone' => 'America/Chicago',
     'location' => [
