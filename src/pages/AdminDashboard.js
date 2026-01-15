@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                         {error && <div style={{ background: '#f8d7da', color: '#721c24', padding: 10, borderRadius: 4, marginBottom: 15 }}>{error}</div>}
 
                         <div className="sub" style={{ margin: '0 0 12px' }}>
-                            Note: Maghrib is automatic (sunset) and Iqamah is set to +4 minutes.
+                            Note: Sunrise is automatic. Maghrib is automatic (sunset) and Iqamah is set to +4 minutes.
                         </div>
 
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -217,11 +217,11 @@ export default function AdminDashboard() {
                             <tbody>
                                 {schedule.map((row, i) => (
                                     (() => {
-                                        const isMaghribAuto = (row.key === 'Maghrib') || row.auto === true;
+                                        const isAuto = row.auto === true || row.key === 'Maghrib' || row.key === 'Sunrise';
                                         return (
                                     <tr key={row.key || i} style={{ borderBottom: '1px solid #eee' }}>
                                         <td style={{ padding: '10px' }}>
-                                            <strong>{row.key}{isMaghribAuto ? ' (Auto)' : ''}</strong>
+                                            <strong>{row.key}{isAuto ? ' (Auto)' : ''}</strong>
                                         </td>
                                         <td style={{ padding: '10px' }}>
                                             <input
@@ -229,7 +229,7 @@ export default function AdminDashboard() {
                                                 value={row.adhan_time || ''}
                                                 onChange={(e) => handleChange(e, i, 'adhan_time')}
                                                 style={{ padding: '6px', width: '80px', fontFamily: 'monospace' }}
-                                                disabled={isMaghribAuto}
+                                                disabled={isAuto}
                                             />
                                         </td>
                                         <td style={{ padding: '10px' }}>
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
                                                 onChange={(e) => handleChange(e, i, 'iqamah_time')}
                                                 placeholder="null"
                                                 style={{ padding: '6px', width: '80px', fontFamily: 'monospace' }}
-                                                disabled={isMaghribAuto}
+                                                disabled={isAuto}
                                             />
                                         </td>
                                     </tr>

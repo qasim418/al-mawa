@@ -35,11 +35,39 @@ try {
     }
     $midday = (new DateTimeImmutable('now', new DateTimeZone($tzName ?: 'UTC')))->setTime(12, 0)->getTimestamp();
     $sun = @date_sun_info($midday, $lat, $lng);
+    $sunriseTs = is_array($sun) && isset($sun['sunrise']) && is_int($sun['sunrise']) ? $sun['sunrise'] : null;
     $sunsetTs = is_array($sun) && isset($sun['sunset']) && is_int($sun['sunset']) ? $sun['sunset'] : null;
 
     if ($method === 'GET') {
         $stmt = $pdo->query('SELECT `key`, adhan_time, iqamah_time, sort_order FROM prayer_times ORDER BY sort_order ASC, `key` ASC');
         $schedule = $stmt->fetchAll();
+
+        // Force Sunrise for display in admin too.
+        if ($sunriseTs !== null) {
+            $sunriseAdhan = hhmm_from_timestamp($sunriseTs, $tzName ?: 'UTC');
+
+            $found = false;
+            foreach ($schedule as &$row) {
+                if (($row['key'] ?? '') === 'Sunrise') {
+                    $row['adhan_time'] = $sunriseAdhan;
+                    $row['iqamah_time'] = null;
+                    $row['auto'] = true;
+                    $found = true;
+                    break;
+                }
+            }
+            unset($row);
+
+            if (!$found) {
+                $schedule[] = [
+                    'key' => 'Sunrise',
+                    'adhan_time' => $sunriseAdhan,
+                    'iqamah_time' => null,
+                    'sort_order' => 20,
+                    'auto' => true,
+                ];
+            }
+        }
 
         // Force Maghrib for display in admin too.
         if ($sunsetTs !== null) {
@@ -83,14 +111,14 @@ try {
         }
 
         $pdo->beginTransaction();
-        $stmt = $pdo->prepare('INSERT INTO prayer_times (`key`, adhan_time, iqamah_time, sort_order) VALUES (?, ?, ?, ?)\n            ON DUPLICATE KEY UPDATE adhan_time=VALUES(adhan_time), iqamah_time=VALUES(iqamah_time), sort_order=VALUES(sort_order)');
+            $stmt = $pdo->prepare('INSERT INTO prayer_times (`key`, adhan_time, iqamah_time, sort_order) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE adhan_time=VALUES(adhan_time), iqamah_time=VALUES(iqamah_time), sort_order=VALUES(sort_order)');
 
         foreach ($schedule as $row) {
             if (!is_array($row)) continue;
             $key = trim((string)($row['key'] ?? ''));
 
-            // Maghrib is automatic (sunset) + 4 minutes; ignore any posted changes.
-            if ($key === 'Maghrib') {
+            // Sunrise and Maghrib are automatic; ignore any posted changes.
+            if ($key === 'Sunrise' || $key === 'Maghrib') {
                 continue;
             }
 

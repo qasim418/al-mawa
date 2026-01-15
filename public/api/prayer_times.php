@@ -29,6 +29,7 @@ try {
     // Use midday to avoid DST edge cases.
     $midday = (new DateTimeImmutable('now', new DateTimeZone($tzName ?: 'UTC')))->setTime(12, 0)->getTimestamp();
     $sun = @date_sun_info($midday, $lat, $lng);
+    $sunriseTs = is_array($sun) && isset($sun['sunrise']) && is_int($sun['sunrise']) ? $sun['sunrise'] : null;
     $sunsetTs = is_array($sun) && isset($sun['sunset']) && is_int($sun['sunset']) ? $sun['sunset'] : null;
 
     $stmt = $pdo->query('SELECT `key`, adhan_time, iqamah_time FROM prayer_times ORDER BY sort_order ASC, `key` ASC');
@@ -41,6 +42,26 @@ try {
             'iqamah' => $r['iqamah_time'] !== null ? $r['iqamah_time'] : null,
         ];
     }, $rows);
+
+    // Force Sunrise adhan to today's sunrise.
+    if ($sunriseTs !== null) {
+        $sunriseAdhan = hhmm_from_timestamp($sunriseTs, $tzName ?: 'UTC');
+
+        $found = false;
+        foreach ($schedule as &$row) {
+            if (($row['key'] ?? '') === 'Sunrise') {
+                $row['adhan'] = $sunriseAdhan;
+                $row['iqamah'] = null;
+                $found = true;
+                break;
+            }
+        }
+        unset($row);
+
+        if (!$found) {
+            $schedule[] = ['key' => 'Sunrise', 'adhan' => $sunriseAdhan, 'iqamah' => null];
+        }
+    }
 
     // Force Maghrib adhan to today's sunset and iqamah to +4 minutes.
     if ($sunsetTs !== null) {
