@@ -29,15 +29,12 @@ export default function Home() {
 
   const slides = useMemo(
     () => [
-      `${process.env.PUBLIC_URL}/courasel/image1.png`,
-      `${process.env.PUBLIC_URL}/courasel/image2.png`,
-      `${process.env.PUBLIC_URL}/courasel/image3.png`,
-      `${process.env.PUBLIC_URL}/courasel/image4.png`,
+      `${process.env.PUBLIC_URL}/courasel/image1.jpg`,
     ],
     []
   );
 
-  const [activeIndex, setActiveIndex] = useState(0);
+
 
   /* DASHBOARD PRAYER LOADER */
   const [schedule, setSchedule] = useState([]);
@@ -67,13 +64,6 @@ export default function Home() {
     const id = setInterval(() => setNow(new Date()), 15000);
     return () => clearInterval(id);
   }, []);
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setActiveIndex((i) => (i + 1) % slides.length);
-    }, 4200);
-    return () => window.clearInterval(id);
-  }, [slides.length]);
 
   return (
     <SiteLayout>
@@ -205,39 +195,8 @@ export default function Home() {
           </div>
 
           <div className="anim delay-2">
-            <div className="carousel" aria-label="Masjid photo carousel">
-              <img src={slides[activeIndex]} alt="Masjid Annoor" />
-              <div className="carousel-controls">
-                <div className="dots" aria-label="Carousel slide selector">
-                  {slides.map((_, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      className={`dot ${idx === activeIndex ? 'active' : ''}`}
-                      onClick={() => setActiveIndex(idx)}
-                      aria-label={`Go to slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-                <div className="carBtns" aria-label="Carousel navigation">
-                  <button
-                    type="button"
-                    className="carBtn"
-                    onClick={() => setActiveIndex((i) => (i - 1 + slides.length) % slides.length)}
-                    aria-label="Previous slide"
-                  >
-                    ‹
-                  </button>
-                  <button
-                    type="button"
-                    className="carBtn"
-                    onClick={() => setActiveIndex((i) => (i + 1) % slides.length)}
-                    aria-label="Next slide"
-                  >
-                    ›
-                  </button>
-                </div>
-              </div>
+            <div className="carousel" aria-label="Masjid photo">
+              <img src={slides[0]} alt="Masjid Annoor" />
             </div>
           </div>
         </div>
@@ -248,7 +207,7 @@ export default function Home() {
         <section className="section">
           <div className="container">
             <h2>Prayer Times</h2>
-            <p className="sub">Congregational (Iqamah) times for today in {center.city}. These are placeholders until the official timetable is added.</p>
+            <p className="sub">Congregational (Iqamah) times for today in {center.city}.</p>
             <div className="card" style={{ overflowX: 'auto' }}>
               <table className="prayer-table">
                 <thead>
@@ -282,7 +241,7 @@ export default function Home() {
         <section className="section" style={{ background: "linear-gradient(180deg, #f7fbf8, #ffffff)" }}>
           <div className="container">
             <h2>Programs & Services</h2>
-            <p className="sub">Serving families with spiritual care, sacred knowledge, and community support.</p>
+            
             <div className="grid cards">
               {services.map((s, i) => (
                 <article className="service anim" style={{ animationDelay: `${i * 70}ms` }} key={s.title}>

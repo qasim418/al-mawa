@@ -46,16 +46,6 @@ const phases = [
   }
 ];
 
-const management = [
-  { name: 'Khalid Ahmed', role: 'Administration', phone: '316-300-9834' },
-  { name: 'Ather Shakeel Siddiqi', role: 'Administration', phone: '703-863-5449' },
-  { name: 'Dr. Arshad, Ph.D.', role: 'Member', phone: '316-550-9435' },
-  { name: 'Syed Mehmood Siddiq', role: 'Member', phone: '316-305-1322' },
-  { name: 'Basim', role: 'Member', phone: '316-371-9069' },
-  { name: 'Dr. Abdirahman', role: 'Member', phone: '872-305-2745' },
-  { name: 'Hafiz Nuredin', role: 'Member', phone: '585-284-8986' }
-];
-
 function money(amount) {
   if (amount == null) return '—';
   return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
@@ -152,7 +142,7 @@ export default function ConstructionProject() {
       <section className="section" style={{ background: 'linear-gradient(180deg, #f7fbf8, #ffffff)' }}>
         <div className="container">
           <h2>Project Phases</h2>
-          <p className="sub">Costs listed are provided by the project plan. Builders’ commission (~10%) is not included in the estimates.</p>
+          <p className="sub">Costs listed are provided by the project plan.</p>
 
           <div className="card" style={{ padding: 22, overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -201,28 +191,7 @@ export default function ConstructionProject() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <h2>Management</h2>
-          <p className="sub">Management and Board members of Masjid Annoor Wichita</p>
 
-          <div className="card" style={{ padding: 22 }}>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {management.map((m) => (
-                <div key={m.phone} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'space-between', padding: '10px 12px', border: '1px solid #e6ece8', borderRadius: 14 }}>
-                  <div>
-                    <div style={{ fontWeight: 900, color: 'var(--green-900)' }}>{m.name}</div>
-                    <div className="sub" style={{ margin: 0 }}>{m.role}</div>
-                  </div>
-                  <div className="mono" style={{ fontWeight: 900 }}>
-                    <a href={`tel:${m.phone}`} style={{ color: 'var(--green-700)', textDecoration: 'none' }}>{m.phone}</a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
     </SiteLayout>
   );
 }
