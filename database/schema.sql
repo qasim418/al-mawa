@@ -47,3 +47,30 @@ ON DUPLICATE KEY UPDATE
   adhan_time = VALUES(adhan_time),
   iqamah_time = VALUES(iqamah_time),
   sort_order = VALUES(sort_order);
+
+-- Islamic Measures & Standards table
+CREATE TABLE IF NOT EXISTS islamic_measures (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `key` VARCHAR(64) NOT NULL,
+  label VARCHAR(128) NOT NULL,
+  value VARCHAR(255) NOT NULL,
+  sort_order TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_measure_key (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Initial default rows for Islamic Measures
+INSERT INTO islamic_measures (`key`, label, value, sort_order) VALUES
+('zakat_nisab_gold', 'Zakat Nisab (Gold)', '87.48 g / 3.09 oz', 10),
+('zakat_nisab_silver', 'Zakat Nisab (Silver)', '612.36 g / 21.60 oz', 20),
+('qurbani_nisab', 'Qurbani Nisab', '612.36 g / 21.60 oz (or its value)', 30),
+('sadaqat_fitr_wheat', 'Sadaqat al-Fitr (wheat)', '1.574 kg / 55.53 oz (or its value)', 40),
+('sadaqat_fitr_dates', 'Sadaqat al-Fitr (dates/raisins)', '3.149 kg / 111.09 oz (or its value)', 50),
+('fidya', 'Fidya (per missed fast/prayer)', 'Same as Sadaqat al-Fitr', 60),
+('mahr_fatimi', 'Mahr Fātimī', '1,530.9 g / 54.00 oz silver', 70),
+('distance_safar', 'Distance of Safar', '77.25 km (≈ 48 miles)', 80)
+ON DUPLICATE KEY UPDATE
+  label = VALUES(label),
+  value = VALUES(value),
+  sort_order = VALUES(sort_order);

@@ -2,7 +2,12 @@ import React from 'react';
 import SiteLayout from '../components/SiteLayout';
 
 export default function OurHistory() {
-  const publicUrl = process.env.PUBLIC_URL || '';
+  // Use relative path for images to work on both local and server
+  const getImagePath = (path) => {
+    // Remove leading slash if present
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${process.env.PUBLIC_URL || ''}/${cleanPath}`;
+  };
 
   return (
     <SiteLayout>
@@ -41,7 +46,7 @@ export default function OurHistory() {
                   }}
                 >
                   <img
-                    src={`${publicUrl}/history/little-house-on-the-corner.png`}
+                    src={getImagePath('history/little-house-on-the-corner.png')}
                     alt="Little house on the corner (1979)"
                     style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
                   />

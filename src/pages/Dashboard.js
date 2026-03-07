@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout';
 import { fmtTime, makeSchedule, timeLeft, fetchPrayerSchedule } from '../utils/prayerSchedule';
+import { fetchIslamicMeasures } from '../utils/islamicMeasures';
 import { homeText } from '../content/homeText';
 import { siteConfig } from '../config/siteConfig';
 import { fetchFundraisingRaised } from '../utils/fundraising';
@@ -27,9 +28,14 @@ export default function Home() {
     email: 'info@almawa.org'
   };
 
+  const getImagePath = (path) => {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${process.env.PUBLIC_URL || ''}/${cleanPath}`;
+  };
+
   const slides = useMemo(
     () => [
-      `${process.env.PUBLIC_URL}/courasel/image1.jpg`,
+      getImagePath('courasel/image1.jpg'),
     ],
     []
   );
@@ -44,6 +50,9 @@ export default function Home() {
   const [raised, setRaised] = useState(0);
   const percent = phase1Goal > 0 ? Math.min(100, Math.round((raised / phase1Goal) * 100)) : 0;
 
+  /* ISLAMIC MEASURES */
+  const [measures, setMeasures] = useState([]);
+
   useEffect(() => {
     // Only fetch if we haven't already
     fetchPrayerSchedule().then((s) => setSchedule(s));
@@ -51,6 +60,10 @@ export default function Home() {
 
   useEffect(() => {
     fetchFundraisingRaised().then(setRaised);
+  }, []);
+
+  useEffect(() => {
+    fetchIslamicMeasures().then((m) => setMeasures(m));
   }, []);
 
   const { todaySchedule, nextPrayer } = useMemo(() => makeSchedule({ now, schedule }), [now, schedule]);
@@ -102,6 +115,11 @@ export default function Home() {
         .prayer-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
         .prayer-table td strong { color: var(--green-900); }
 
+        /* PRAYER TIMES & ISLAMIC MEASURES GRID */
+        .prayer-measures-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+        .measures-table td { font-size: 14px; }
+        .measures-table td strong { color: var(--green-900); }
+
         /* SERVICES */
         .grid { display: grid; gap: 16px; }
         .grid.cards { grid-template-columns: repeat(12, 1fr); }
@@ -130,6 +148,9 @@ export default function Home() {
         .crescent { animation: floatSlow 4s ease-in-out infinite alternate; }
 
         /* Responsive */
+        @media (max-width: 1100px) {
+          .prayer-measures-grid { grid-template-columns: 1fr; }
+        }
         @media (max-width: 980px) {
           .hero .inner { grid-template-columns: 1fr; }
           .recon { grid-template-columns: 1fr; }
@@ -203,35 +224,62 @@ export default function Home() {
       </section>
 
       <main>
-        {/* PRAYER TIMES */}
+        {/* PRAYER TIMES & ISLAMIC MEASURES */}
         <section className="section">
           <div className="container">
-            <h2>Prayer Times</h2>
-            <p className="sub">Congregational (Iqamah) times for today in {center.city}.</p>
-            <div className="card" style={{ overflowX: 'auto' }}>
-              <table className="prayer-table">
-                <thead>
-                  <tr>
-                    <th>Prayer</th>
-                    <th>Adhan</th>
-                    <th>Iqamah</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {todaySchedule.map((p) => (
-                    <tr key={p.key}>
-                      <td><strong>{p.key}</strong></td>
-                      <td className="mono">{fmtTime(p.adhan)}</td>
-                      <td className="mono">{p.iqamah ? fmtTime(p.iqamah) : "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="prayer-measures-grid">
+              {/* Prayer Times Column */}
+              <div>
+                <h2>Prayer Times</h2>
+                <p className="sub">Congregational (Iqamah) times for today in {center.city}.</p>
+                <div className="card" style={{ overflowX: 'auto' }}>
+                  <table className="prayer-table">
+                    <thead>
+                      <tr>
+                        <th>Prayer</th>
+                        <th>Adhan</th>
+                        <th>Iqamah</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {todaySchedule.map((p) => (
+                        <tr key={p.key}>
+                          <td><strong>{p.key}</strong></td>
+                          <td className="mono">{fmtTime(p.adhan)}</td>
+                          <td className="mono">{p.iqamah ? fmtTime(p.iqamah) : "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Islamic Measures Column */}
+              <div>
+                <h2>Islamic Measures & Standards</h2>
+                <p className="sub">Reference values for Zakat, Sadaqah, and other Islamic obligations.</p>
+                <div className="card" style={{ overflowX: 'auto' }}>
+                  <table className="prayer-table measures-table">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {measures.map((m) => (
+                        <tr key={m.key}>
+                          <td><strong>{m.label}</strong></td>
+                          <td className="mono">{m.value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
 
-
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 14 }}>
-              <NavLink className="btn primary" to="/prayer-timings">View Full Timings</NavLink>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
               <button type="button" className="btn ghost" onClick={scrollToVisit}>Visit & Contact</button>
             </div>
           </div>
@@ -332,10 +380,10 @@ export default function Home() {
                 <div className="rule" />
                 <div className="admin-row">
                   <div>
-                    <div style={{ fontWeight: 900, color: 'var(--green-900)' }}>Khalid Ahmed</div>
+                    <div style={{ fontWeight: 900, color: 'var(--green-900)' }}>Contact</div>
                   </div>
                   <div className="mono" style={{ fontWeight: 900 }}>
-                    <a href="tel:+13162130467" style={{ color: 'var(--green-700)', textDecoration: 'none' }}>+1 (316) 213-0467</a>
+                    <a href="tel:+13163618080" style={{ color: 'var(--green-700)', textDecoration: 'none' }}>+1 (316) 361-8080</a>
                   </div>
                 </div>
 
@@ -358,10 +406,13 @@ const services = [
 ];
 
 function CrescentBg() {
-  const publicUrl = process.env.PUBLIC_URL || '';
+  const getImagePath = (path) => {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${process.env.PUBLIC_URL || ''}/${cleanPath}`;
+  };
   return (
     <img
-      src={`${publicUrl}/logo.png`}
+      src={getImagePath('logo.png')}
       alt=""
       style={{
         position: 'absolute',
@@ -373,6 +424,7 @@ function CrescentBg() {
         borderRadius: '50%'
       }}
       aria-hidden="true"
+      onError={(e) => { e.target.style.display = 'none'; }}
     />
   );
 }

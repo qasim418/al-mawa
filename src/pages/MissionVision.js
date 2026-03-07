@@ -11,7 +11,14 @@ export default function MissionVision() {
 
           <div className="card" style={{ padding: 32 }}>
             <div className="prose">
-              <h2 style={{ marginTop: 0, color: 'var(--green-900)' }}>Mission</h2>
+              <h2 style={{ marginTop: 0, color: 'var(--green-900)' }}>Who We Are</h2>
+              <p style={{ fontSize: '16px', lineHeight: '1.8', background: 'var(--green-100)', padding: 20, borderRadius: 12, borderLeft: '4px solid var(--green-700)' }}>
+                <strong>Masjid Annoor Wichita Area (MAWA), Inc</strong> is a registered non-profit organization and federally recognized as tax-exempt.
+              </p>
+
+              <div className="rule" />
+
+              <h2 style={{ color: 'var(--green-900)' }}>Mission</h2>
               <p style={{ fontSize: '16px', lineHeight: '1.8' }}>
                 To serve the Muslim community by providing various services to meet their spiritual and social needs and by promoting
                 the values and teachings of Islam in accordance with the Qur'an and following the commandments and orders of Allah Subhana Wa Ta'ala, and Sunnah of His Prophet, Muhammad (pbuh).

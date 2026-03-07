@@ -19,6 +19,12 @@ export default function AdminDashboard() {
     const [fundsErr, setFundsErr] = useState('');
     const [savingFunds, setSavingFunds] = useState(false);
 
+    // Islamic Measures
+    const [measures, setMeasures] = useState([]);
+    const [measuresMsg, setMeasuresMsg] = useState('');
+    const [measuresErr, setMeasuresErr] = useState('');
+    const [savingMeasures, setSavingMeasures] = useState(false);
+
     const apiBase = getApiBase();
 
     async function checkSession() {
@@ -48,6 +54,17 @@ export default function AdminDashboard() {
                 if (frData.ok) {
                     setRaised(String(frData.raised ?? 0));
                     if (frData.csrf) setCsrf(frData.csrf);
+                }
+
+                // Load Islamic Measures
+                const im = await fetch(`${apiBase}/admin_islamic_measures.php`, {
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                });
+                const imData = await im.json();
+                if (imData.ok) {
+                    setMeasures(imData.measures || []);
+                    if (imData.csrf) setCsrf(imData.csrf);
                 }
             }
         } catch (e) {
@@ -147,6 +164,37 @@ export default function AdminDashboard() {
             setFundsErr('Network error updating fundraising');
         } finally {
             setSavingFunds(false);
+        }
+    };
+
+    const handleMeasureChange = (e, index, field) => {
+        const newMeasures = [...measures];
+        newMeasures[index] = { ...newMeasures[index], [field]: e.target.value };
+        setMeasures(newMeasures);
+    };
+
+    const handleSaveMeasures = async () => {
+        setSavingMeasures(true);
+        setMeasuresMsg('');
+        setMeasuresErr('');
+        try {
+            const res = await fetch(`${apiBase}/admin_islamic_measures.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ measures, csrf }),
+            });
+            const data = await res.json();
+            if (data.ok) {
+                setMeasuresMsg('Islamic Measures updated!');
+                checkSession();
+            } else {
+                setMeasuresErr(data.error || 'Failed to update Islamic Measures');
+            }
+        } catch (e) {
+            setMeasuresErr('Network error updating Islamic Measures');
+        } finally {
+            setSavingMeasures(false);
         }
     };
 
@@ -277,6 +325,51 @@ export default function AdminDashboard() {
                             </div>
                             <button className="btn primary" onClick={handleSaveFunds} disabled={savingFunds}>
                                 {savingFunds ? 'Saving...' : 'Save Fundraising'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="card" style={{ padding: 20, marginTop: 18 }}>
+                        <h2 style={{ marginTop: 0 }}>Islamic Measures & Standards</h2>
+                        <p className="sub" style={{ marginTop: 0 }}>Update the Islamic Measures values shown on the home page (Zakat Nisab, Sadaqat al-Fitr, etc.).</p>
+
+                        {measuresMsg && <div style={{ background: '#d4edda', color: '#155724', padding: 10, borderRadius: 4, marginBottom: 15 }}>{measuresMsg}</div>}
+                        {measuresErr && <div style={{ background: '#f8d7da', color: '#721c24', padding: 10, borderRadius: 4, marginBottom: 15 }}>{measuresErr}</div>}
+
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr>
+                                    <th style={{ textAlign: 'left', padding: '10px' }}>Item</th>
+                                    <th style={{ textAlign: 'left', padding: '10px' }}>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {measures.map((row, i) => (
+                                    <tr key={row.key || i} style={{ borderBottom: '1px solid #eee' }}>
+                                        <td style={{ padding: '10px' }}>
+                                            <input
+                                                type="text"
+                                                value={row.label || ''}
+                                                onChange={(e) => handleMeasureChange(e, i, 'label')}
+                                                style={{ padding: '6px', width: '100%', maxWidth: '280px' }}
+                                            />
+                                        </td>
+                                        <td style={{ padding: '10px' }}>
+                                            <input
+                                                type="text"
+                                                value={row.value || ''}
+                                                onChange={(e) => handleMeasureChange(e, i, 'value')}
+                                                style={{ padding: '6px', width: '100%', maxWidth: '320px', fontFamily: 'monospace' }}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        <div style={{ marginTop: 20, textAlign: 'right' }}>
+                            <button className="btn primary" onClick={handleSaveMeasures} disabled={savingMeasures}>
+                                {savingMeasures ? 'Saving...' : 'Save Islamic Measures'}
                             </button>
                         </div>
                     </div>

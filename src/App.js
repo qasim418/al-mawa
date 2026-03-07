@@ -9,7 +9,7 @@ import ConstructionProject from './pages/ConstructionProject';
 import Donate from './pages/Donate';
 import Home from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import PrayerTimings from './pages/PrayerTimings';
+import Media from './pages/Media';
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
         <Route exact path="/about/bylaws" component={Bylaws} />
         <Route exact path="/construction" component={ConstructionProject} />
         <Route exact path="/donate" component={Donate} />
-        <Route exact path="/prayer-timings" component={PrayerTimings} />
+        <Route exact path="/media" component={Media} />
         <Redirect exact from="/fundraising" to="/construction" />
         <Redirect to="/" />
       </Switch>

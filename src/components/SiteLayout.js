@@ -2,12 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 function BrandMark() {
-  const publicUrl = process.env.PUBLIC_URL || '';
+  const getImagePath = (path) => {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${process.env.PUBLIC_URL || ''}/${cleanPath}`;
+  };
   return (
     <img
-      src={`${publicUrl}/star.png`}
+      src={getImagePath('star.png')}
       alt="Masjid Annoor Wichita"
       style={{ width: '36px', height: '36px', borderRadius: '50%' }}
+      onError={(e) => { e.target.style.display = 'none'; }}
     />
   );
 }
@@ -288,7 +292,7 @@ export default function SiteLayout({ children }) {
                 </div>
               </li>
               <li><NavLink exact to="/construction" activeClassName="active" onClick={() => setMenuOpen(false)}>Construction Project</NavLink></li>
-              <li><NavLink exact to="/prayer-timings" activeClassName="active" onClick={() => setMenuOpen(false)}>Prayer Timings</NavLink></li>
+              <li><NavLink exact to="/media" activeClassName="active" onClick={() => setMenuOpen(false)}>Media</NavLink></li>
               <li><NavLink className="btn primary donate-link" to="/donate" onClick={() => setMenuOpen(false)}>Donate</NavLink></li>
             </ul>
           </nav>
