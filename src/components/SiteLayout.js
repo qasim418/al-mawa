@@ -136,13 +136,9 @@ function DateDisplay() {
         color: 'var(--green-900)',
         fontFamily: 'Amiri, Scheherazade New, serif',
         lineHeight: 1.2,
-        whiteSpace: 'nowrap',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6
+        whiteSpace: 'nowrap'
       }}>
-        <span style={{ fontSize: 16, color: 'var(--green-600)' }}>☪</span>
-        <span>{hijriStr}</span>
+        {hijriStr}
       </span>
       {/* Gregorian Date - Secondary */}
       <span className="gregorian" style={{
@@ -359,13 +355,13 @@ export default function SiteLayout({ children }) {
           gap: 16px;
           padding: 0 30px;
           color: #fff;
-          font-size: 14px;
-          font-weight: 500;
-          letter-spacing: 0.5px;
+          font-size: 13px;
+          font-weight: 400;
+          letter-spacing: 0.3px;
         }
         .ticker-text strong {
           color: #fff;
-          font-weight: 700;
+          font-weight: 600;
         }
         .ticker-arabic {
           font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Arial', sans-serif;
@@ -388,7 +384,7 @@ export default function SiteLayout({ children }) {
           100% { transform: translateX(-50%); }
         }
         @media (max-width: 640px) {
-          .ticker-text { font-size: 12px; padding: 0 20px; }
+          .ticker-text { font-size: 11px; padding: 0 20px; }
           .ticker-arabic { font-size: 18px; }
         }
 
