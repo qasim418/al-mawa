@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import moment from 'moment';
-import 'moment-hijri';
+import moment from 'moment-hijri';
 import { fetchMoonSightingConfig } from '../utils/moonSighting';
+
+moment.locale('en');
 
 // Fallback function to calculate approximate Hijri date
 function toHijri(gregorianDate) {
@@ -91,15 +92,11 @@ function DateDisplay() {
         // Format Hijri date using moment-hijri
         let hijri;
         try {
-          // Try to use moment-hijri - ensure moment has the hijri plugin loaded
           const m = moment(adjustedDate);
-          // Check if iFormat method exists (moment-hijri adds this)
-          if (typeof m.iFormat === 'function' || typeof m.format === 'function') {
-            hijri = m.format('iD iMMMM iYYYY');
-          } else {
+          if (typeof m.iYear !== 'function') {
             throw new Error('moment-hijri not loaded');
           }
-          // Check if result is valid (not "Invalid date")
+          hijri = m.format('iMMMM iD, iYYYY');
           if (!hijri || hijri.toLowerCase().includes('invalid') || hijri.includes('NaN')) {
             throw new Error('Invalid hijri date');
           }
@@ -136,7 +133,6 @@ function DateDisplay() {
         fontWeight: 700,
         color: 'var(--green-900)',
         fontFamily: 'Amiri, Scheherazade New, serif',
-        direction: 'rtl',
         lineHeight: 1.2,
         whiteSpace: 'nowrap',
         display: 'flex',
