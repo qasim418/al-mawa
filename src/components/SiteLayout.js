@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import moment from 'moment-hijri';
+import { fetchMoonSightingConfig } from '../utils/moonSighting';
 
 function BrandMark() {
   const getImagePath = (path) => {
@@ -16,11 +18,86 @@ function BrandMark() {
   );
 }
 
+function DateDisplay() {
+  const [dateStr, setDateStr] = useState('');
+  const [hijriStr, setHijriStr] = useState('');
+
+  useEffect(() => {
+    async function loadDates() {
+      const today = new Date();
+      
+      // Short gregorian date: "Mar 15, 2025"
+      const gregorian = today.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      setDateStr(gregorian);
+
+      // Fetch moon sighting config from server
+      const config = await fetchMoonSightingConfig();
+      const adjustment = config?.adjustment ?? -1;
+
+      // Calculate Hijri date with moon sighting adjustment
+      const adjustedDate = new Date(today);
+      adjustedDate.setDate(adjustedDate.getDate() + adjustment);
+      
+      // Short hijri: "15 Sha'ban 1447"
+      const hijri = moment(adjustedDate).format('iD iMMMM iYYYY');
+      setHijriStr(hijri);
+    }
+
+    loadDates();
+  }, []);
+
+  return (
+    <div className="date-box" style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: 1,
+      padding: '2px 0',
+      marginLeft: 16,
+      borderLeft: '2px solid var(--green-600)',
+      paddingLeft: 12
+    }}>
+      {/* Hijri Date - Primary */}
+      <span className="hijri" style={{
+        fontSize: 15,
+        fontWeight: 700,
+        color: 'var(--green-900)',
+        fontFamily: 'Amiri, Scheherazade New, serif',
+        direction: 'rtl',
+        lineHeight: 1.2,
+        whiteSpace: 'nowrap',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6
+      }}>
+        <span style={{ fontSize: 16, color: 'var(--green-600)' }}>☪</span>
+        <span>{hijriStr}</span>
+      </span>
+      {/* Gregorian Date - Secondary */}
+      <span className="gregorian" style={{
+        fontSize: 11,
+        color: 'var(--muted)',
+        fontWeight: 500,
+        lineHeight: 1.2,
+        paddingLeft: 22
+      }}>
+        {dateStr}
+      </span>
+    </div>
+  );
+}
+
 export default function SiteLayout({ children }) {
   const year = new Date().getFullYear();
   const [menuOpen, setMenuOpen] = useState(false);
   const [aboutDropdownOpen, setAboutDropdownOpen] = useState(false);
+  const [constructionDropdownOpen, setConstructionDropdownOpen] = useState(false);
   const aboutDropdownRef = useRef(null);
+  const constructionDropdownRef = useRef(null);
   const location = useLocation();
 
   // Close dropdown when clicking outside
@@ -28,6 +105,9 @@ export default function SiteLayout({ children }) {
     function handleClickOutside(event) {
       if (aboutDropdownRef.current && !aboutDropdownRef.current.contains(event.target)) {
         setAboutDropdownOpen(false);
+      }
+      if (constructionDropdownRef.current && !constructionDropdownRef.current.contains(event.target)) {
+        setConstructionDropdownOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -37,6 +117,7 @@ export default function SiteLayout({ children }) {
   // Close dropdown when route changes
   useEffect(() => {
     setAboutDropdownOpen(false);
+    setConstructionDropdownOpen(false);
   }, [location]);
 
   return (
@@ -203,13 +284,13 @@ export default function SiteLayout({ children }) {
         .ticker-content {
           display: inline-flex;
           animation: ticker-scroll 30s linear infinite;
-          padding: 12px 0;
+          padding: 8px 0;
         }
         .ticker-text {
           display: inline-flex;
           align-items: center;
-          gap: 20px;
-          padding: 0 40px;
+          gap: 16px;
+          padding: 0 30px;
           color: #fff;
           font-size: 14px;
           font-weight: 500;
@@ -220,9 +301,12 @@ export default function SiteLayout({ children }) {
           font-weight: 700;
         }
         .ticker-arabic {
-          font-family: 'Traditional Arabic', 'Arial', sans-serif;
-          font-size: 16px;
-          color: var(--gold-500);
+          font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Arial', sans-serif;
+          font-size: 22px;
+          color: #f5d77b;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          padding: 0 10px;
         }
         .ticker-translation {
           font-style: italic;
@@ -238,7 +322,7 @@ export default function SiteLayout({ children }) {
         }
         @media (max-width: 640px) {
           .ticker-text { font-size: 12px; padding: 0 20px; }
-          .ticker-arabic { font-size: 14px; }
+          .ticker-arabic { font-size: 18px; }
         }
 
         @media (max-width: 640px) {
@@ -247,6 +331,25 @@ export default function SiteLayout({ children }) {
           .btn { padding: 10px 16px; font-size: 14px; }
           .foot { flex-direction: column; text-align: center; gap: 16px; }
         }
+        @media (max-width: 480px) {
+          .brand .date-box {
+            padding: '2px 0' !important;
+            margin-left: 10px !important;
+            padding-left: 8px !important;
+            border-left: '2px solid var(--green-600)' !important;
+          }
+          .brand .date-box .hijri {
+            font-size: 13px !important;
+          }
+          .brand .date-box .hijri span:first-child {
+            font-size: 14px !important;
+          }
+          .brand .date-box .gregorian {
+            font-size: 10px !important;
+            padding-left: 20px !important;
+          }
+        }
+
       `}</style>
 
       <header>
@@ -260,6 +363,7 @@ export default function SiteLayout({ children }) {
                 <div style={{ fontSize: 16, color: 'var(--green-900)' }}>Masjid Annoor</div>
                 <div className="sub">Wichita, Kansas</div>
               </div>
+              <DateDisplay />
             </NavLink>
             <button
               className="hamburger"
@@ -291,13 +395,31 @@ export default function SiteLayout({ children }) {
                   <NavLink to="/about/bylaws" onClick={() => setMenuOpen(false)}>Bylaws</NavLink>
                 </div>
               </li>
-              <li><NavLink exact to="/construction" activeClassName="active" onClick={() => setMenuOpen(false)}>Construction Project</NavLink></li>
+              <li className="dropdown" ref={constructionDropdownRef}>
+                <button
+                  type="button"
+                  className={`dropdown-toggle ${location.pathname.startsWith('/construction') ? 'active' : ''}`}
+                  onClick={() => setConstructionDropdownOpen(!constructionDropdownOpen)}
+                  aria-expanded={constructionDropdownOpen}
+                  aria-haspopup="true"
+                >
+                  Construction <span className={`dropdown-arrow ${constructionDropdownOpen ? 'open' : ''}`}>▼</span>
+                </button>
+                <div className={`dropdown-menu ${constructionDropdownOpen ? 'open' : ''}`}>
+                  <NavLink to="/construction/project" onClick={() => setMenuOpen(false)}>Project</NavLink>
+                  <NavLink to="/construction/phases" onClick={() => setMenuOpen(false)}>Project Phases</NavLink>
+                  <NavLink to="/construction/fundraising" onClick={() => setMenuOpen(false)}>Fundraising</NavLink>
+                  <NavLink to="/construction/gallery" onClick={() => setMenuOpen(false)}>Gallery</NavLink>
+                </div>
+              </li>
               <li><NavLink exact to="/media" activeClassName="active" onClick={() => setMenuOpen(false)}>Media</NavLink></li>
               <li><NavLink className="btn primary donate-link" to="/donate" onClick={() => setMenuOpen(false)}>Donate</NavLink></li>
             </ul>
           </nav>
         </div>
       </header>
+
+
 
       {/* Moving Ticker Bar */}
       <div className="ticker-bar">

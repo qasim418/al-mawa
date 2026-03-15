@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout';
 import { getApiBase } from '../utils/apiBase';
+import { fetchMoonSightingConfig } from '../utils/moonSighting';
 
 export default function AdminDashboard() {
     const [session, setSession] = useState(null);
@@ -24,6 +25,12 @@ export default function AdminDashboard() {
     const [measuresMsg, setMeasuresMsg] = useState('');
     const [measuresErr, setMeasuresErr] = useState('');
     const [savingMeasures, setSavingMeasures] = useState(false);
+
+    // Moon Sighting Config
+    const [moonConfig, setMoonConfig] = useState({ adjustment: -1, source: 'Chicago Hilal Committee' });
+    const [moonMsg, setMoonMsg] = useState('');
+    const [moonErr, setMoonErr] = useState('');
+    const [savingMoon, setSavingMoon] = useState(false);
 
     const apiBase = getApiBase();
 
@@ -65,6 +72,12 @@ export default function AdminDashboard() {
                 if (imData.ok) {
                     setMeasures(imData.measures || []);
                     if (imData.csrf) setCsrf(imData.csrf);
+                }
+
+                // Load Moon Sighting Config
+                const moonData = await fetchMoonSightingConfig();
+                if (moonData) {
+                    setMoonConfig(moonData);
                 }
             }
         } catch (e) {
@@ -195,6 +208,35 @@ export default function AdminDashboard() {
             setMeasuresErr('Network error updating Islamic Measures');
         } finally {
             setSavingMeasures(false);
+        }
+    };
+
+    const handleSaveMoonSighting = async () => {
+        setSavingMoon(true);
+        setMoonMsg('');
+        setMoonErr('');
+        try {
+            const res = await fetch(`${apiBase}/admin_moon_sighting.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ 
+                    adjustment: parseInt(moonConfig.adjustment), 
+                    source: moonConfig.source,
+                    csrf 
+                }),
+            });
+            const data = await res.json();
+            if (data.ok) {
+                setMoonMsg('Moon sighting configuration updated!');
+                checkSession();
+            } else {
+                setMoonErr(data.error || 'Failed to update moon sighting config');
+            }
+        } catch (e) {
+            setMoonErr('Network error updating moon sighting config');
+        } finally {
+            setSavingMoon(false);
         }
     };
 
@@ -371,6 +413,64 @@ export default function AdminDashboard() {
                             <button className="btn primary" onClick={handleSaveMeasures} disabled={savingMeasures}>
                                 {savingMeasures ? 'Saving...' : 'Save Islamic Measures'}
                             </button>
+                        </div>
+                    </div>
+
+                    <div className="card" style={{ padding: 20, marginTop: 18 }}>
+                        <h2 style={{ marginTop: 0 }}>Moon Sighting Configuration</h2>
+                        <p className="sub" style={{ marginTop: 0 }}>
+                            Adjust the Islamic date calculation based on your local moon sighting committee. 
+                            This affects the Hijri date displayed on the website.
+                        </p>
+
+                        {moonMsg && <div style={{ background: '#d4edda', color: '#155724', padding: 10, borderRadius: 4, marginBottom: 15 }}>{moonMsg}</div>}
+                        {moonErr && <div style={{ background: '#f8d7da', color: '#721c24', padding: 10, borderRadius: 4, marginBottom: 15 }}>{moonErr}</div>}
+
+                        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'end' }}>
+                            <div style={{ minWidth: 200 }}>
+                                <label style={{ display: 'block', marginBottom: 6, fontWeight: 700 }}>Moon Sighting Source</label>
+                                <select
+                                    value={moonConfig.source}
+                                    onChange={(e) => setMoonConfig({ ...moonConfig, source: e.target.value })}
+                                    style={{ width: '100%', padding: '10px', borderRadius: 4, border: '1px solid #ddd' }}
+                                >
+                                    <option value="Chicago Hilal Committee">Chicago Hilal Committee</option>
+                                    <option value="ICNA">ICNA</option>
+                                    <option value="ISNA">ISNA</option>
+                                    <option value="Local Moon Sighting">Local Moon Sighting</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div style={{ minWidth: 180 }}>
+                                <label style={{ display: 'block', marginBottom: 6, fontWeight: 700 }}>Day Adjustment</label>
+                                <select
+                                    value={moonConfig.adjustment}
+                                    onChange={(e) => setMoonConfig({ ...moonConfig, adjustment: parseInt(e.target.value) })}
+                                    style={{ width: '100%', padding: '10px', borderRadius: 4, border: '1px solid #ddd' }}
+                                >
+                                    <option value={-2}>-2 days (2 days behind calculated)</option>
+                                    <option value={-1}>-1 day (1 day behind calculated)</option>
+                                    <option value={0}>0 days (same as calculated)</option>
+                                    <option value={1}>+1 day (1 day ahead of calculated)</option>
+                                    <option value={2}>+2 days (2 days ahead of calculated)</option>
+                                </select>
+                            </div>
+                            <button className="btn primary" onClick={handleSaveMoonSighting} disabled={savingMoon}>
+                                {savingMoon ? 'Saving...' : 'Save Moon Sighting Config'}
+                            </button>
+                        </div>
+
+                        <div style={{ marginTop: 16, padding: 12, background: '#f8f9fa', borderRadius: 8, fontSize: 14 }}>
+                            <strong>How to use:</strong>
+                            <ul style={{ margin: '8px 0', paddingLeft: 20 }}>
+                                <li>If calculated date shows <strong>26 Ramadan</strong> but moon sighting says <strong>25 Ramadan</strong>, select <strong>-1 day</strong></li>
+                                <li>If calculated date shows <strong>25 Ramadan</strong> but moon sighting says <strong>26 Ramadan</strong>, select <strong>+1 day</strong></li>
+                                <li>If they match, select <strong>0 days</strong></li>
+                            </ul>
+                            <p style={{ margin: 0, color: '#666' }}>
+                                Current setting: <strong>{moonConfig.adjustment === 0 ? 'Same as calculated' : `${moonConfig.adjustment > 0 ? '+' : ''}${moonConfig.adjustment} day(s)`}</strong> | 
+                                Source: <strong>{moonConfig.source}</strong>
+                            </p>
                         </div>
                     </div>
                 </div>

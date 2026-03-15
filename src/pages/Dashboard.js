@@ -110,10 +110,92 @@ export default function Home() {
         .carBtn { height: 36px; width: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.25); color: #fff; font-weight: 900; cursor: pointer; }
         .carBtn:hover { background: rgba(0,0,0,0.35); }
 
-        .prayer-table { width: 100%; border-collapse: collapse; }
-        .prayer-table th, .prayer-table td { padding: 12px 14px; text-align: left; border-bottom: 1px dashed #e9efe9; }
-        .prayer-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
-        .prayer-table td strong { color: var(--green-900); }
+        /* ENHANCED TABLE STYLES */
+        .prayer-table { 
+          width: 100%; 
+          border-collapse: separate;
+          border-spacing: 0;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .prayer-table thead {
+          background: linear-gradient(135deg, var(--green-900), var(--green-700));
+        }
+        .prayer-table th { 
+          padding: 14px 16px; 
+          text-align: left; 
+          font-size: 11px; 
+          text-transform: uppercase; 
+          letter-spacing: 0.1em; 
+          color: #fff;
+          font-weight: 700;
+          border: none;
+        }
+        .prayer-table th:first-child { border-radius: 12px 0 0 0; }
+        .prayer-table th:last-child { border-radius: 0 12px 0 0; }
+        
+        .prayer-table tbody tr {
+          background: #fff;
+          transition: background 0.15s ease;
+        }
+        .prayer-table tbody tr:nth-child(even) {
+          background: #f8fbf9;
+        }
+        .prayer-table tbody tr:hover {
+          background: var(--green-100);
+        }
+        .prayer-table td { 
+          padding: 14px 16px; 
+          text-align: left; 
+          border-bottom: 1px solid #e9efe9;
+          font-size: 14px;
+        }
+        .prayer-table tbody tr:last-child td {
+          border-bottom: none;
+        }
+        .prayer-table tbody tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+        .prayer-table tbody tr:last-child td:last-child { border-radius: 0 0 12px 0; }
+        .prayer-table td strong { 
+          color: var(--green-900); 
+          font-weight: 700;
+        }
+        .prayer-table .mono {
+          font-family: 'SF Mono', Monaco, monospace;
+          font-size: 13px;
+          color: var(--green-700);
+          font-weight: 600;
+        }
+        
+        /* Measures table specific */
+        .measures-table td:first-child {
+          width: 60%;
+        }
+        .measures-table td:last-child {
+          font-weight: 600;
+          color: var(--green-900);
+        }
+        
+        /* Next prayer highlight */
+        .prayer-table tbody tr.next-prayer {
+          background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05)) !important;
+          border-left: 3px solid var(--gold-500);
+        }
+        .prayer-table tbody tr.next-prayer td {
+          font-weight: 600;
+        }
+        .next-badge {
+          display: inline-block;
+          margin-left: 8px;
+          padding: 2px 8px;
+          background: var(--gold-500);
+          color: #fff;
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          border-radius: 999px;
+          letter-spacing: 0.05em;
+        }
 
         /* PRAYER TIMES & ISLAMIC MEASURES GRID */
         .prayer-measures-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -171,7 +253,8 @@ export default function Home() {
           .hero-ctas .btn { width: auto; max-width: 280px; margin: 0 auto; }
           .np-card { padding: 14px; }
           .np-time { font-size: 18px; }
-          .prayer-table th, .prayer-table td { padding: 10px 12px; font-size: 14px; }
+          .prayer-table th, .prayer-table td { padding: 12px; font-size: 13px; }
+          .prayer-table .mono { font-size: 12px; }
           .service { padding: 14px; }
           .service h3 { font-size: 16px; }
           .service p { font-size: 13px; }
@@ -242,13 +325,19 @@ export default function Home() {
                       </tr>
                     </thead>
                     <tbody>
-                      {todaySchedule.map((p) => (
-                        <tr key={p.key}>
-                          <td><strong>{p.key}</strong></td>
-                          <td className="mono">{fmtTime(p.adhan)}</td>
-                          <td className="mono">{p.iqamah ? fmtTime(p.iqamah) : "—"}</td>
-                        </tr>
-                      ))}
+                      {todaySchedule.map((p) => {
+                        const isNext = nextPrayer && nextPrayer.key === p.key && !nextPrayer.nextDay;
+                        return (
+                          <tr key={p.key} className={isNext ? 'next-prayer' : ''}>
+                            <td>
+                              <strong>{p.key}</strong>
+                              {isNext && <span className="next-badge">Next</span>}
+                            </td>
+                            <td className="mono">{fmtTime(p.adhan)}</td>
+                            <td className="mono">{p.iqamah ? fmtTime(p.iqamah) : "—"}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
