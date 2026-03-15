@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import moment from 'moment-hijri';
+import moment from 'moment';
+import 'moment-hijri';
 import { fetchMoonSightingConfig } from '../utils/moonSighting';
 
 // Fallback function to calculate approximate Hijri date
@@ -13,18 +14,32 @@ function toHijri(gregorianDate) {
   const diffTime = gregorianDate.getTime() - epoch.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   
-  // Approximate year (accounting for 11 day difference per year)
-  const hijriYear = Math.floor(diffDays / 354.367) + 1;
+  // Approximate year
+  const totalHijriDays = diffDays;
+  const hijriYear = Math.floor(totalHijriDays / 354.367) + 1;
   
-  // Calculate day of year
-  const yearProgress = (diffDays % 354.367) / 354.367;
-  const monthIndex = Math.floor(yearProgress * 12);
-  const dayOfMonth = Math.floor((yearProgress * 12 - monthIndex) * 29.5) + 1;
+  // Days into current Hijri year
+  const daysIntoYear = totalHijriDays % 354.367;
+  
+  // Calculate month (alternating 29 and 30 days)
+  let daysAccumulated = 0;
+  let monthIndex = 0;
+  const monthLengths = [30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29]; // Approximate
+  
+  for (let i = 0; i < 12; i++) {
+    if (daysAccumulated + monthLengths[i] > daysIntoYear) {
+      monthIndex = i;
+      break;
+    }
+    daysAccumulated += monthLengths[i];
+  }
+  
+  const dayOfMonth = Math.floor(daysIntoYear - daysAccumulated) + 1;
   
   return {
-    day: dayOfMonth,
+    day: Math.max(1, Math.min(30, dayOfMonth)),
     month: hijriMonths[monthIndex] || 'Muharram',
-    year: hijriYear
+    year: Math.max(1, hijriYear)
   };
 }
 
@@ -76,14 +91,21 @@ function DateDisplay() {
         // Format Hijri date using moment-hijri
         let hijri;
         try {
-          // Try to use moment-hijri
-          hijri = moment(adjustedDate).format('iD iMMMM iYYYY');
+          // Try to use moment-hijri - ensure moment has the hijri plugin loaded
+          const m = moment(adjustedDate);
+          // Check if iFormat method exists (moment-hijri adds this)
+          if (typeof m.iFormat === 'function' || typeof m.format === 'function') {
+            hijri = m.format('iD iMMMM iYYYY');
+          } else {
+            throw new Error('moment-hijri not loaded');
+          }
           // Check if result is valid (not "Invalid date")
-          if (!hijri || hijri.toLowerCase().includes('invalid')) {
+          if (!hijri || hijri.toLowerCase().includes('invalid') || hijri.includes('NaN')) {
             throw new Error('Invalid hijri date');
           }
         } catch (e) {
           // Fallback: calculate approximate Hijri date
+          console.log('Using fallback Hijri calculation:', e.message);
           const hijriDate = toHijri(adjustedDate);
           hijri = `${hijriDate.day} ${hijriDate.month} ${hijriDate.year}`;
         }
