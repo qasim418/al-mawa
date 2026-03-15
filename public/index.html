@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Al-Mawa Islamic Center - A welcoming Islamic center serving the Wichita community"
+      content="Masjid Annoor – A welcoming Islamic center serving the Wichita area community"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
     <!--
@@ -24,7 +24,80 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Al-Mawa Islamic Center</title>
+    <title>Masjid Annoor Wichita Area</title>
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://almawa.org/" />
+
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://almawa.org/" />
+    <meta property="og:site_name" content="Masjid Annoor Wichita" />
+    <meta property="og:title" content="Masjid Annoor Wichita Area" />
+    <meta property="og:description" content="Masjid Annoor – A welcoming Islamic center serving the Wichita area community. Prayer times, community events, and more." />
+    <meta property="og:image" content="https://almawa.org/logo.png" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Masjid Annoor Wichita Area" />
+    <meta name="twitter:description" content="Masjid Annoor – A welcoming Islamic center serving the Wichita area community. Prayer times, community events, and more." />
+    <meta name="twitter:image" content="https://almawa.org/logo.png" />
+
+    <!-- Geo / Local SEO -->
+    <meta name="geo.region" content="US-KS" />
+    <meta name="geo.placename" content="Wichita, Kansas" />
+    <meta name="geo.position" content="37.7197;-97.2896" />
+    <meta name="ICBM" content="37.7197, -97.2896" />
+
+    <!-- Keywords -->
+    <meta name="keywords" content="Masjid Annoor, mosque Wichita, Islamic center Wichita KS, prayer times Wichita, Muslim community Kansas, Jumu'ah Wichita, Al-Mawa" />
+
+    <!-- JSON-LD Structured Data: Mosque / Local Business -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MosqueOrTemple",
+      "name": "Masjid Annoor",
+      "alternateName": ["Al-Mawa Islamic Center", "Mosque Annoor Wichita"],
+      "url": "https://almawa.org",
+      "logo": "https://almawa.org/logo.png",
+      "image": "https://almawa.org/logo.png",
+      "description": "Masjid Annoor is a welcoming Islamic center serving the Wichita, Kansas area community, established in 1983.",
+      "foundingDate": "1983",
+      "telephone": "+1-316-652-2411",
+      "email": "info@almawa.org",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "3102 E 17th St N",
+        "addressLocality": "Wichita",
+        "addressRegion": "KS",
+        "postalCode": "67214",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 37.7197,
+        "longitude": -97.2896
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+          "opens": "05:00",
+          "closes": "22:00"
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/MasjidAnnoorWichita"
+      ],
+      "areaServed": {
+        "@type": "City",
+        "name": "Wichita",
+        "sameAs": "https://en.wikipedia.org/wiki/Wichita,_Kansas"
+      }
+    }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
