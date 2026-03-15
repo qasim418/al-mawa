@@ -1,7 +1,7 @@
 {
   "name": "al-mawa",
   "version": "0.1.0",
-  "homepage": "/al-mawa",
+  "homepage": "/al-mawa/build",
   "proxy": "http://localhost:80",
   "private": true,
   "dependencies": {
