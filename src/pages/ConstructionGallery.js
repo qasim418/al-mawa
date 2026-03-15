@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SiteLayout from '../components/SiteLayout';
 
 // Image configurations with their actual extensions
@@ -53,15 +53,24 @@ export default function ConstructionGallery() {
   };
 
   // Handle keyboard navigation
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedImage) return;
       if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') goToPrev(e);
-      if (e.key === 'ArrowRight') goToNext(e);
+      if (e.key === 'ArrowLeft') {
+        e.stopPropagation();
+        const newId = selectedImage.id === 1 ? 16 : selectedImage.id - 1;
+        setSelectedImage(images[newId - 1]);
+      }
+      if (e.key === 'ArrowRight') {
+        e.stopPropagation();
+        const newId = selectedImage.id === 16 ? 1 : selectedImage.id + 1;
+        setSelectedImage(images[newId - 1]);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImage]);
 
   return (
