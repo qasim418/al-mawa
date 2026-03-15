@@ -3,6 +3,31 @@ import { NavLink, useLocation } from 'react-router-dom';
 import moment from 'moment-hijri';
 import { fetchMoonSightingConfig } from '../utils/moonSighting';
 
+// Fallback function to calculate approximate Hijri date
+function toHijri(gregorianDate) {
+  const hijriMonths = ['Muharram', 'Safar', 'Rabi al-Awwal', 'Rabi al-Thani', 'Jumada al-Awwal', 'Jumada al-Thani', 'Rajab', 'Shaban', 'Ramadan', 'Shawwal', 'Dhu al-Qadah', 'Dhu al-Hijjah'];
+  
+  // Approximate calculation (Islamic calendar is lunar, ~354 days/year)
+  // Epoch: July 16, 622 CE (1 Muharram 1 AH)
+  const epoch = new Date(622, 6, 16);
+  const diffTime = gregorianDate.getTime() - epoch.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  // Approximate year (accounting for 11 day difference per year)
+  const hijriYear = Math.floor(diffDays / 354.367) + 1;
+  
+  // Calculate day of year
+  const yearProgress = (diffDays % 354.367) / 354.367;
+  const monthIndex = Math.floor(yearProgress * 12);
+  const dayOfMonth = Math.floor((yearProgress * 12 - monthIndex) * 29.5) + 1;
+  
+  return {
+    day: dayOfMonth,
+    month: hijriMonths[monthIndex] || 'Muharram',
+    year: hijriYear
+  };
+}
+
 function BrandMark() {
   const getImagePath = (path) => {
     const cleanPath = path.startsWith('/') ? path.slice(1) : path;
@@ -24,27 +49,49 @@ function DateDisplay() {
 
   useEffect(() => {
     async function loadDates() {
-      const today = new Date();
-      
-      // Short gregorian date: "Mar 15, 2025"
-      const gregorian = today.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-      setDateStr(gregorian);
+      try {
+        const today = new Date();
+        
+        // Short gregorian date: "Mar 15, 2025"
+        const gregorian = today.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        setDateStr(gregorian);
 
-      // Fetch moon sighting config from server
-      const config = await fetchMoonSightingConfig();
-      const adjustment = config?.adjustment ?? -1;
+        // Fetch moon sighting config from server
+        let adjustment = -1;
+        try {
+          const config = await fetchMoonSightingConfig();
+          adjustment = config?.adjustment ?? -1;
+        } catch (e) {
+          console.log('Using default moon sighting adjustment');
+        }
 
-      // Calculate Hijri date with moon sighting adjustment
-      const adjustedDate = new Date(today);
-      adjustedDate.setDate(adjustedDate.getDate() + adjustment);
-      
-      // Short hijri: "15 Sha'ban 1447"
-      const hijri = moment(adjustedDate).format('iD iMMMM iYYYY');
-      setHijriStr(hijri);
+        // Calculate Hijri date with moon sighting adjustment
+        const adjustedDate = new Date(today);
+        adjustedDate.setDate(adjustedDate.getDate() + adjustment);
+        
+        // Format Hijri date using moment-hijri
+        let hijri;
+        try {
+          // Try to use moment-hijri
+          hijri = moment(adjustedDate).format('iD iMMMM iYYYY');
+          // Check if result is valid (not "Invalid date")
+          if (!hijri || hijri.toLowerCase().includes('invalid')) {
+            throw new Error('Invalid hijri date');
+          }
+        } catch (e) {
+          // Fallback: calculate approximate Hijri date
+          const hijriDate = toHijri(adjustedDate);
+          hijri = `${hijriDate.day} ${hijriDate.month} ${hijriDate.year}`;
+        }
+        setHijriStr(hijri);
+      } catch (e) {
+        console.error('Date loading error:', e);
+        setHijriStr('—');
+      }
     }
 
     loadDates();
