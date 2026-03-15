@@ -80,7 +80,8 @@ function DateDisplay() {
         let adjustment = -1;
         try {
           const config = await fetchMoonSightingConfig();
-          adjustment = config?.adjustment ?? -1;
+          const parsedAdjustment = Number(config?.adjustment);
+          adjustment = Number.isFinite(parsedAdjustment) ? parsedAdjustment : -1;
         } catch (e) {
           console.log('Using default moon sighting adjustment');
         }
@@ -88,11 +89,12 @@ function DateDisplay() {
         // Calculate Hijri date with moon sighting adjustment
         const adjustedDate = new Date(today);
         adjustedDate.setDate(adjustedDate.getDate() + adjustment);
+        const calculationBaseDate = Number.isNaN(adjustedDate.getTime()) ? today : adjustedDate;
         
         // Format Hijri date using moment-hijri
         let hijri;
         try {
-          const m = moment(adjustedDate);
+          const m = moment(calculationBaseDate);
           if (typeof m.iYear !== 'function') {
             throw new Error('moment-hijri not loaded');
           }
@@ -103,7 +105,7 @@ function DateDisplay() {
         } catch (e) {
           // Fallback: calculate approximate Hijri date
           console.log('Using fallback Hijri calculation:', e.message);
-          const hijriDate = toHijri(adjustedDate);
+          const hijriDate = toHijri(calculationBaseDate);
           hijri = `${hijriDate.day} ${hijriDate.month} ${hijriDate.year}`;
         }
         setHijriStr(hijri);
